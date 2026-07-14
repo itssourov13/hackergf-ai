@@ -1,0 +1,41 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "chat_id": {
+      "type": "string",
+      "description": "Reference to the parent Chat"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "assistant",
+        "system"
+      ],
+      "description": "Message sender role"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message content (markdown supported)"
+    },
+    "model": {
+      "type": "string",
+      "description": "AI model that generated this message (for assistant messages)"
+    },
+    "tokens": {
+      "type": "number",
+      "description": "Token count for this message",
+      "default": 0
+    },
+    "edited": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "chat_id",
+    "role",
+    "content"
+  ]
+}

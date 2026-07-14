@@ -1,0 +1,60 @@
+{
+  "name": "File",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Original file name"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL to the uploaded file"
+    },
+    "file_type": {
+      "type": "string",
+      "description": "File category: pdf, docx, text, json, csv, zip, image, code"
+    },
+    "file_size": {
+      "type": "number",
+      "description": "File size in bytes"
+    },
+    "mime_type": {
+      "type": "string"
+    },
+    "extracted_content": {
+      "type": "string",
+      "description": "Extracted text content for AI analysis"
+    },
+    "page_count": {
+      "type": "number",
+      "description": "Page count for documents where applicable"
+    },
+    "word_count": {
+      "type": "number",
+      "description": "Word count of extracted content"
+    },
+    "character_count": {
+      "type": "number",
+      "description": "Character count of extracted content"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "uploading",
+        "processing",
+        "ready",
+        "error"
+      ],
+      "default": "uploading"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message if processing failed"
+    }
+  },
+  "required": [
+    "name",
+    "file_url",
+    "file_type"
+  ]
+}

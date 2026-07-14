@@ -1,0 +1,34 @@
+{
+  "name": "Chat",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Conversation title"
+    },
+    "model": {
+      "type": "string",
+      "description": "AI model used for this conversation",
+      "default": "automatic"
+    },
+    "system_prompt": {
+      "type": "string",
+      "description": "Custom system prompt for this conversation"
+    },
+    "pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "last_message_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "message_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

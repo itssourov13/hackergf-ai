@@ -1,0 +1,90 @@
+{
+  "name": "Subscription",
+  "type": "object",
+  "properties": {
+    "plan": {
+      "type": "string",
+      "enum": [
+        "free",
+        "pro",
+        "team",
+        "enterprise"
+      ],
+      "default": "free"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "canceled",
+        "past_due",
+        "trialing",
+        "incomplete"
+      ],
+      "default": "active"
+    },
+    "billing_cycle": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "yearly"
+      ],
+      "default": "monthly"
+    },
+    "stripe_customer_id": {
+      "type": "string"
+    },
+    "stripe_subscription_id": {
+      "type": "string"
+    },
+    "current_period_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "current_period_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "canceled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "ai_messages": {
+          "type": "number",
+          "default": 0
+        },
+        "tokens_used": {
+          "type": "number",
+          "default": 0
+        },
+        "storage_used_mb": {
+          "type": "number",
+          "default": 0
+        },
+        "file_uploads": {
+          "type": "number",
+          "default": 0
+        },
+        "code_executions": {
+          "type": "number",
+          "default": 0
+        },
+        "api_requests": {
+          "type": "number",
+          "default": 0
+        },
+        "period_start": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "default": {}
+    }
+  },
+  "required": [
+    "plan"
+  ]
+}

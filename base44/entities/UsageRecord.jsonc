@@ -1,0 +1,36 @@
+{
+  "name": "UsageRecord",
+  "type": "object",
+  "properties": {
+    "metric": {
+      "type": "string",
+      "enum": [
+        "ai_message",
+        "tokens",
+        "file_upload",
+        "storage",
+        "code_execution",
+        "api_request"
+      ],
+      "description": "Type of usage metric"
+    },
+    "value": {
+      "type": "number",
+      "description": "Quantity consumed",
+      "default": 1
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional context (model used, file type, etc.)",
+      "default": {}
+    },
+    "period": {
+      "type": "string",
+      "description": "Billing period key (YYYY-MM)"
+    }
+  },
+  "required": [
+    "metric",
+    "value"
+  ]
+}

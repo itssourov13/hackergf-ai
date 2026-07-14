@@ -1,0 +1,45 @@
+{
+  "name": "ApiKey",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Descriptive name for the API key"
+    },
+    "key_prefix": {
+      "type": "string",
+      "description": "First 8 characters of the key for identification"
+    },
+    "key_hash": {
+      "type": "string",
+      "description": "Hashed version of the API key"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Scopes assigned to this key",
+      "default": [
+        "chat"
+      ]
+    },
+    "last_used": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "key_prefix",
+    "key_hash"
+  ]
+}

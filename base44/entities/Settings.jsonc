@@ -1,0 +1,43 @@
+{
+  "name": "Settings",
+  "type": "object",
+  "properties": {
+    "theme": {
+      "type": "string",
+      "enum": [
+        "dark",
+        "light",
+        "system"
+      ],
+      "default": "dark"
+    },
+    "preferred_model": {
+      "type": "string",
+      "default": "automatic"
+    },
+    "code_editor_font_size": {
+      "type": "number",
+      "default": 14
+    },
+    "code_editor_word_wrap": {
+      "type": "boolean",
+      "default": true
+    },
+    "code_editor_minimap": {
+      "type": "boolean",
+      "default": false
+    },
+    "terminal_font_size": {
+      "type": "number",
+      "default": 13
+    },
+    "email_notifications": {
+      "type": "boolean",
+      "default": true
+    },
+    "ai_system_prompt": {
+      "type": "string",
+      "description": "Custom system prompt override"
+    }
+  }
+}
