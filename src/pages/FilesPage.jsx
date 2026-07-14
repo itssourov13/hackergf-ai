@@ -3,8 +3,9 @@ import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card-custom";
 import { Button } from "@/components/ui/button-custom";
 import { Badge } from "@/components/ui/badge-custom";
-import { Upload, FileText, Trash2, Search, Loader2, FileCode, Archive, Braces, FileSpreadsheet, Image as ImageIcon, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
+import { Upload, FileText, Trash2, Search, Loader2, FileCode, Archive, Braces, FileSpreadsheet, Image as ImageIcon, Download } from "lucide-react";
 import { UPLOAD_LIMITS, getFileCategory, getMaxSizeForFile, ACCEPTED_EXTENSIONS, GLOBAL_LIMITS } from "@/lib/config/uploadLimits";
+import { trackUsage } from "@/lib/usage";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_ICONS = {
@@ -119,6 +120,11 @@ export default function FilesPage() {
       } else {
         await base44.entities.File.update(fileRecord.id, { status: "ready" });
       }
+
+      // Track file upload usage
+      trackUsage("file_upload", 1, { file_type: category });
+      trackUsage("storage", Math.round(file.size / (1024 * 1024) * 100) / 100, { file_type: category });
+      base44.analytics.track({ eventName: "file_uploaded", properties: { file_type: category } });
     } catch (err) {
       console.error("Upload failed:", err);
       alert(`Upload failed: ${file.name} - ${err.message}`);
@@ -289,7 +295,12 @@ export default function FilesPage() {
                   {React.createElement(CATEGORY_ICONS[selectedFile.file_type] || FileText, { className: "w-5 h-5 text-red-500" })}
                   <h3 className="font-semibold text-white truncate">{selectedFile.name}</h3>
                 </div>
-                <button onClick={() => setSelectedFile(null)} className="text-zinc-500 hover:text-white text-xl">×</button>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => window.open(selectedFile.file_url, "_blank")} className="text-zinc-500 hover:text-white" title="Download">
+                    <Download className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => setSelectedFile(null)} className="text-zinc-500 hover:text-white text-xl">×</button>
+                </div>
               </div>
               <div className="p-4 overflow-y-auto max-h-[60vh]">
                 <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
@@ -314,6 +325,12 @@ export default function FilesPage() {
                     </div>
                   )}
                 </div>
+                {selectedFile.file_type === "image" && selectedFile.file_url ? (
+                  <div className="mb-4">
+                    <p className="text-xs text-zinc-500 mb-2 uppercase tracking-wide">Preview</p>
+                    <img src={selectedFile.file_url} alt={selectedFile.name} className="w-full rounded-lg border border-zinc-800" />
+                  </div>
+                ) : null}
                 {selectedFile.extracted_content ? (
                   <div>
                     <p className="text-xs text-zinc-500 mb-2 uppercase tracking-wide">Extracted Content</p>

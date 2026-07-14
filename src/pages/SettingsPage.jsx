@@ -6,17 +6,18 @@ import { Button } from "@/components/ui/button-custom";
 import { Badge } from "@/components/ui/badge-custom";
 import { Loader2, Save, Check } from "lucide-react";
 import { AI_MODELS } from "@/lib/config/aiProviders";
-import { getPlan, PLAN_LIST } from "@/lib/config/plans";
 
 export default function SettingsPage() {
   const { user } = useAuth();
   const [settings, setSettings] = useState(null);
+  const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     loadSettings();
+    loadSubscription();
   }, []);
 
   const loadSettings = async () => {
@@ -49,6 +50,17 @@ export default function SettingsPage() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadSubscription = async () => {
+    try {
+      const data = await base44.entities.Subscription.list("-created_date", 1);
+      if (data.length > 0) {
+        setSubscription(data[0]);
+      }
+    } catch (err) {
+      console.error("Failed to load subscription:", err);
     }
   };
 
@@ -110,7 +122,7 @@ export default function SettingsPage() {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-zinc-400">Plan</span>
-            <Badge variant="default" className="uppercase">Free</Badge>
+            <Badge variant="default" className="uppercase">{subscription?.plan || "Free"}</Badge>
           </div>
         </CardContent>
       </Card>

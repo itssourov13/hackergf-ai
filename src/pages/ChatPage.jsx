@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { SYSTEM_PROMPT, AI_MODELS, DEFAULT_MODEL } from "@/lib/config/aiProviders";
+import { trackUsage } from "@/lib/usage";
 import ReactMarkdown from "react-markdown";
-import { Send, Plus, Trash2, MessageSquare, Loader2, Copy, Check, ChevronDown, Square, RefreshCw, Terminal } from "lucide-react";
+import { Send, Plus, Trash2, MessageSquare, Loader2, Copy, Check, ChevronDown, Square, Terminal, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function ChatPage() {
@@ -17,8 +18,8 @@ export default function ChatPage() {
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const [modelDropdown, setModelDropdown] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef(null);
-  const abortRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -26,7 +27,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, sending]);
 
   // Load chat list
   useEffect(() => {
@@ -64,10 +65,11 @@ export default function ChatPage() {
     }
   };
 
-  const createNewChat = async () => {
+  const createNewChat = () => {
     navigate("/chat");
     setMessages([]);
     setInput("");
+    setSidebarOpen(false);
   };
 
   const deleteChat = async (id, e) => {
@@ -86,14 +88,15 @@ export default function ChatPage() {
     }
   };
 
-  const handleSend = async (regenerateFrom = null) => {
-    const content = regenerateFrom || input.trim();
+  const handleSend = async () => {
+    const content = input.trim();
     if (!content || sending) return;
 
     setInput("");
     setSending(true);
 
     let currentChatId = chatId;
+    let msgCount = messages.length;
 
     try {
       // Create chat if none selected
@@ -118,6 +121,7 @@ export default function ChatPage() {
         content,
       });
       setMessages((prev) => [...prev, userMsg]);
+      msgCount += 1;
 
       // Build conversation context from recent messages
       const recentMessages = [...messages, userMsg].slice(-10);
@@ -136,7 +140,6 @@ export default function ChatPage() {
       const response = await base44.integrations.Core.InvokeLLM({
         prompt: fullPrompt,
         model: selectedModel === "automatic" ? undefined : selectedModel,
-        response_json_schema: null,
       });
 
       const assistantContent = typeof response === "string" ? response : JSON.stringify(response);
@@ -149,12 +152,17 @@ export default function ChatPage() {
         model: selectedModel,
       });
       setMessages((prev) => [...prev, assistantMsg]);
+      msgCount += 1;
 
       // Update chat metadata
       await base44.entities.Chat.update(currentChatId, {
         last_message_at: new Date().toISOString(),
-        message_count: (messages.length + 2),
+        message_count: msgCount,
       });
+
+      // Track usage
+      trackUsage("ai_message", 1, { model: selectedModel });
+      base44.analytics.track({ eventName: "chat_message_sent", properties: { model: selectedModel } });
 
       // Refresh chat list
       loadChats();
@@ -190,47 +198,38 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen">
-      {/* Chat Sidebar */}
+      {/* Chat Sidebar - Desktop */}
       <div className="hidden md:flex w-72 flex-col border-r border-zinc-800 bg-black">
-        <div className="p-3 border-b border-zinc-800">
-          <button
-            onClick={createNewChat}
-            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg bg-red-600/10 border border-red-600/30 text-red-400 hover:bg-red-600/20 transition-colors text-sm font-medium"
-          >
-            <Plus className="w-4 h-4" />
-            New Chat
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
-          {chats.length === 0 ? (
-            <div className="text-center py-8 text-sm text-zinc-600">
-              No conversations yet
-            </div>
-          ) : (
-            chats.map((chat) => (
-              <div
-                key={chat.id}
-                onClick={() => navigate(`/chat/${chat.id}`)}
-                className={cn(
-                  "group flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-colors",
-                  chatId === chat.id
-                    ? "bg-red-600/10 border border-red-900/40"
-                    : "hover:bg-zinc-900 border border-transparent"
-                )}
-              >
-                <MessageSquare className="w-4 h-4 text-zinc-500 flex-shrink-0" />
-                <span className="flex-1 text-sm text-zinc-300 truncate">{chat.title}</span>
-                <button
-                  onClick={(e) => deleteChat(chat.id, e)}
-                  className="opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-red-400 transition-all"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))
-          )}
-        </div>
+        <ChatSidebar
+          chats={chats}
+          chatId={chatId}
+          createNewChat={createNewChat}
+          deleteChat={deleteChat}
+          navigate={navigate}
+        />
       </div>
+
+      {/* Chat Sidebar - Mobile */}
+      {sidebarOpen && (
+        <>
+          <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setSidebarOpen(false)} />
+          <div className="fixed inset-y-0 left-0 w-72 z-50 md:hidden bg-black border-r border-zinc-800 flex flex-col">
+            <div className="flex items-center justify-between p-3 border-b border-zinc-800">
+              <span className="text-sm font-semibold text-white">Conversations</span>
+              <button onClick={() => setSidebarOpen(false)} className="text-zinc-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <ChatSidebar
+              chats={chats}
+              chatId={chatId}
+              createNewChat={createNewChat}
+              deleteChat={deleteChat}
+              navigate={(path) => { navigate(path); setSidebarOpen(false); }}
+            />
+          </div>
+        </>
+      )}
 
       {/* Chat Main Area */}
       <div className="flex-1 flex flex-col bg-zinc-950">
@@ -241,8 +240,15 @@ export default function ChatPage() {
               <Terminal className="w-5 h-5 text-red-500" />
             </Link>
             <button
-              onClick={createNewChat}
+              onClick={() => setSidebarOpen(true)}
               className="md:hidden p-2 text-zinc-400 hover:text-white"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <button
+              onClick={createNewChat}
+              className="hidden md:flex p-2 text-zinc-400 hover:text-white"
+              title="New Chat"
             >
               <Plus className="w-5 h-5" />
             </button>
@@ -422,6 +428,51 @@ export default function ChatPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ChatSidebar({ chats, chatId, createNewChat, deleteChat, navigate }) {
+  return (
+    <>
+      <div className="p-3 border-b border-zinc-800">
+        <button
+          onClick={createNewChat}
+          className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg bg-red-600/10 border border-red-600/30 text-red-400 hover:bg-red-600/20 transition-colors text-sm font-medium"
+        >
+          <Plus className="w-4 h-4" />
+          New Chat
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        {chats.length === 0 ? (
+          <div className="text-center py-8 text-sm text-zinc-600">
+            No conversations yet
+          </div>
+        ) : (
+          chats.map((chat) => (
+            <div
+              key={chat.id}
+              onClick={() => navigate(`/chat/${chat.id}`)}
+              className={cn(
+                "group flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-colors",
+                chatId === chat.id
+                  ? "bg-red-600/10 border border-red-900/40"
+                  : "hover:bg-zinc-900 border border-transparent"
+              )}
+            >
+              <MessageSquare className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+              <span className="flex-1 text-sm text-zinc-300 truncate">{chat.title}</span>
+              <button
+                onClick={(e) => deleteChat(chat.id, e)}
+                className="opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-red-400 transition-all"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </>
   );
 }
 

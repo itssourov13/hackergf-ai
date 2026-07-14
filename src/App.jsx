@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import AppLayout from '@/components/AppLayout';
 import Home from '@/pages/Home';
 import Login from '@/pages/Login';
@@ -18,6 +19,8 @@ import ChatPage from '@/pages/ChatPage';
 import EditorPage from '@/pages/EditorPage';
 import FilesPage from '@/pages/FilesPage';
 import SettingsPage from '@/pages/SettingsPage';
+import AdminPage from '@/pages/AdminPage';
+import BillingPage from '@/pages/BillingPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -52,6 +55,8 @@ const AuthenticatedApp = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/files" element={<FilesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/billing" element={<BillingPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Route>
         {/* Full-screen protected routes */}
         <Route path="/chat" element={<ChatPage />} />
@@ -68,15 +73,17 @@ const AuthenticatedApp = () => {
 function App() {
 
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <ScrollToTop />
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <QueryClientProvider client={queryClientInstance}>
+          <Router>
+            <ScrollToTop />
+            <AuthenticatedApp />
+          </Router>
+          <Toaster />
+        </QueryClientProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }
 

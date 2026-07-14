@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card-custom";
-import { MessageSquare, Code2, Upload, FileText, TrendingUp, Clock } from "lucide-react";
-import { getPlan } from "@/lib/config/plans";
+import { MessageSquare, Code2, Upload, FileText, CreditCard } from "lucide-react";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -40,6 +39,7 @@ export default function Dashboard() {
     { label: "New Chat", path: "/chat", icon: MessageSquare, color: "text-red-500", bg: "bg-red-600/10 border-red-600/30" },
     { label: "Open Editor", path: "/editor", icon: Code2, color: "text-blue-500", bg: "bg-blue-600/10 border-blue-600/30" },
     { label: "Upload Files", path: "/files", icon: Upload, color: "text-green-500", bg: "bg-green-600/10 border-green-600/30" },
+    { label: "Billing", path: "/billing", icon: CreditCard, color: "text-yellow-500", bg: "bg-yellow-600/10 border-yellow-600/30" },
   ];
 
   const statCards = [
@@ -60,7 +60,7 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {quickActions.map((action) => {
           const Icon = action.icon;
           return (
