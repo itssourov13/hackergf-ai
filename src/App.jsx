@@ -21,6 +21,17 @@ import FilesPage from '@/pages/FilesPage';
 import SettingsPage from '@/pages/SettingsPage';
 import AdminPage from '@/pages/AdminPage';
 import BillingPage from '@/pages/BillingPage';
+import AnalyticsPage from '@/pages/AnalyticsPage';
+import ApiKeysPage from '@/pages/ApiKeysPage';
+import ProjectsPage from '@/pages/ProjectsPage';
+import SupportPage from '@/pages/SupportPage';
+import DocsPage from '@/pages/DocsPage';
+import StatusPage from '@/pages/StatusPage';
+import ShortcutsPage from '@/pages/ShortcutsPage';
+import QuotasPage from '@/pages/QuotasPage';
+import ModelsPage from '@/pages/ModelsPage';
+import SecurityLogPage from '@/pages/SecurityLogPage';
+import CommandsPage from '@/pages/CommandsPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -56,6 +67,17 @@ const AuthenticatedApp = () => {
           <Route path="/files" element={<FilesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/billing" element={<BillingPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/api-keys" element={<ApiKeysPage />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/support" element={<SupportPage />} />
+          <Route path="/docs" element={<DocsPage />} />
+          <Route path="/status" element={<StatusPage />} />
+          <Route path="/shortcuts" element={<ShortcutsPage />} />
+          <Route path="/quotas" element={<QuotasPage />} />
+          <Route path="/models" element={<ModelsPage />} />
+          <Route path="/security-log" element={<SecurityLogPage />} />
+          <Route path="/commands" element={<CommandsPage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Route>
         {/* Full-screen protected routes */}

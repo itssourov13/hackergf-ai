@@ -1,0 +1,48 @@
+{
+  "name": "SupportTicket",
+  "type": "object",
+  "properties": {
+    "subject": {
+      "type": "string",
+      "description": "Ticket subject line"
+    },
+    "message": {
+      "type": "string",
+      "description": "Detailed message from the user"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "general",
+        "bug",
+        "feature_request",
+        "billing",
+        "account"
+      ],
+      "default": "general"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "resolved",
+        "closed"
+      ],
+      "default": "open"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium"
+    }
+  },
+  "required": [
+    "subject",
+    "message"
+  ]
+}
