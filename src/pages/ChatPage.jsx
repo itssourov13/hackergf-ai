@@ -25,6 +25,9 @@ export default function ChatPage() {
   const [modelDropdown, setModelDropdown] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [attachments, setAttachments] = useState([]);
+  const [likedMessages, setLikedMessages] = useState([]);
+  const [dislikedMessages, setDislikedMessages] = useState([]);
 
   // Generation state
   const [phase, setPhase] = useState("idle"); // "idle" | "thinking" | "streaming"
@@ -147,6 +150,7 @@ export default function ChatPage() {
     if (!content || phase !== "idle") return;
 
     setInput("");
+    setAttachments([]);
     setPhase("thinking");
 
     let currentChatId = chatId;
@@ -256,6 +260,99 @@ export default function ChatPage() {
     navigator.clipboard.writeText(content);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const addAttachments = (newAtts) => {
+    setAttachments((prev) => [...prev, ...newAtts]);
+    newAtts.forEach((att) => {
+      setTimeout(() => {
+        setAttachments((prev) => prev.map((a) => (a.id === att.id ? { ...a, uploading: false } : a)));
+      }, 800 + Math.random() * 1200);
+    });
+  };
+
+  const removeAttachment = (id) => {
+    setAttachments((prev) => prev.filter((a) => a.id !== id));
+  };
+
+  const handleLike = (id) => {
+    setLikedMessages((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
+    setDislikedMessages((prev) => prev.filter((i) => i !== id));
+  };
+
+  const handleDislike = (id) => {
+    setDislikedMessages((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
+    setLikedMessages((prev) => prev.filter((i) => i !== id));
+  };
+
+  const handleDeleteMessage = async (id) => {
+    if (!confirm("Delete this response?")) return;
+    try {
+      await base44.entities.Message.delete(id);
+      setMessages((prev) => prev.filter((m) => m.id !== id));
+    } catch (err) {
+      console.error("Failed to delete message:", err);
+    }
+  };
+
+  const handleRegenerate = async (msg) => {
+    if (phase !== "idle") return;
+    const msgIndex = messages.findIndex((m) => m.id === msg.id);
+    if (msgIndex === -1) return;
+    const contextMessages = messages.slice(0, msgIndex);
+    setPhase("thinking");
+    try {
+      const contextStr = contextMessages
+        .map((m) => (m.role === "user" ? `User: ${m.content}` : m.role === "assistant" ? `Assistant: ${m.content}` : ""))
+        .filter(Boolean)
+        .join("\n\n");
+      const fullPrompt = `${SYSTEM_PROMPT}\n\nConversation history:\n${contextStr}\n\nPlease respond to the user's latest message.`;
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: fullPrompt,
+        model: selectedModel === "automatic" ? undefined : selectedModel,
+      });
+      const assistantContent = typeof response === "string" ? response : JSON.stringify(response);
+      await new Promise((resolve) => {
+        startStreaming(assistantContent, () => resolve());
+      });
+      await base44.entities.Message.update(msg.id, { content: assistantContent });
+      setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, content: assistantContent } : m)));
+      trackUsage("ai_message", 1, { model: selectedModel });
+    } catch (err) {
+      console.error("Failed to regenerate:", err);
+    } finally {
+      setPhase("idle");
+      setStreamingContent("");
+    }
+  };
+
+  const handleContinue = async (msg) => {
+    if (phase !== "idle") return;
+    setPhase("thinking");
+    try {
+      const contextStr = messages
+        .map((m) => (m.role === "user" ? `User: ${m.content}` : m.role === "assistant" ? `Assistant: ${m.content}` : ""))
+        .filter(Boolean)
+        .join("\n\n");
+      const fullPrompt = `${SYSTEM_PROMPT}\n\nConversation so far:\n${contextStr}\n\nPlease continue the assistant's last response from where it left off. Do not repeat what was already said.`;
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: fullPrompt,
+        model: selectedModel === "automatic" ? undefined : selectedModel,
+      });
+      const continuation = typeof response === "string" ? response : JSON.stringify(response);
+      const newContent = msg.content + "\n\n" + continuation;
+      await new Promise((resolve) => {
+        startStreaming(continuation, () => resolve());
+      });
+      await base44.entities.Message.update(msg.id, { content: newContent });
+      setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, content: newContent } : m)));
+      trackUsage("ai_message", 1, { model: selectedModel });
+    } catch (err) {
+      console.error("Failed to continue:", err);
+    } finally {
+      setPhase("idle");
+      setStreamingContent("");
+    }
   };
 
   const handleNavigate = (path) => {
@@ -377,8 +474,13 @@ export default function ChatPage() {
                 <ChatMessage
                   key={msg.id}
                   msg={msg}
-                  copiedId={copiedId}
-                  onCopy={copyMessage}
+                  likedMessages={likedMessages}
+                  dislikedMessages={dislikedMessages}
+                  onLike={handleLike}
+                  onDislike={handleDislike}
+                  onRegenerate={handleRegenerate}
+                  onContinue={handleContinue}
+                  onDelete={handleDeleteMessage}
                 />
               ))}
 
@@ -390,8 +492,6 @@ export default function ChatPage() {
                 <ChatMessage
                   msg={{ id: "streaming", role: "assistant", content: streamingContent }}
                   isStreaming={true}
-                  copiedId={copiedId}
-                  onCopy={copyMessage}
                 />
               )}
 
@@ -409,6 +509,9 @@ export default function ChatPage() {
             onStop={handleStop}
             isGenerating={phase !== "idle"}
             disabled={phase === "thinking"}
+            attachments={attachments}
+            onAddAttachments={addAttachments}
+            onRemoveAttachment={removeAttachment}
           />
         </div>
       </div>

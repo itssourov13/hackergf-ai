@@ -1,11 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Copy, Check, User } from "lucide-react";
+import { Terminal, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { cn } from "@/lib/utils";
+import MessageActions from "./MessageActions";
+import CodeBlock from "./CodeBlock";
 
-export default function ChatMessage({ msg, isStreaming = false, copiedId, onCopy }) {
+export default function ChatMessage({ msg, isStreaming = false, likedMessages = [], dislikedMessages = [], onLike, onDislike, onShare, onRegenerate, onContinue, onDelete }) {
   const isUser = msg.role === "user";
+  const liked = likedMessages.includes(msg.id);
+  const disliked = dislikedMessages.includes(msg.id);
 
   if (isUser) {
     return (
@@ -16,10 +19,10 @@ export default function ChatMessage({ msg, isStreaming = false, copiedId, onCopy
         className="flex justify-end"
       >
         <div className="flex items-start gap-3 max-w-[80%] flex-row-reverse">
-          <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center">
+          <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center">
             <User className="w-4 h-4 text-zinc-400" />
           </div>
-          <div className="bg-zinc-800/80 border border-zinc-700 rounded-2xl rounded-tr-md px-4 py-3">
+          <div className="bg-gradient-to-br from-zinc-700 to-zinc-800 border border-zinc-700 rounded-2xl rounded-tr-md px-4 py-3 shadow-lg">
             <p className="text-sm text-zinc-100 whitespace-pre-wrap leading-relaxed">{msg.content}</p>
           </div>
         </div>
@@ -35,14 +38,30 @@ export default function ChatMessage({ msg, isStreaming = false, copiedId, onCopy
       className="flex gap-3"
     >
       {/* AI Avatar */}
-      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-red-600/20 to-red-900/20 border border-red-600/30 flex items-center justify-center">
-        <span className="text-xs font-bold text-red-400">AI</span>
+      <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-gradient-to-br from-red-600/20 to-zinc-900 border border-red-600/30 flex items-center justify-center">
+        <Terminal className="w-4 h-4 text-red-400" />
       </div>
 
       <div className="group relative flex-1 min-w-0">
-        <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl rounded-tl-md px-4 py-3 backdrop-blur-sm">
+        <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl rounded-tl-md px-4 py-3.5 backdrop-blur-sm">
           <div className="md-content max-w-none">
-            <ReactMarkdown>{msg.content}</ReactMarkdown>
+            <ReactMarkdown
+              components={{
+                code({ className, children }) {
+                  const match = /language-(\w+)/.exec(className || "");
+                  const content = String(children).replace(/\n$/, "");
+                  if (match || content.includes("\n")) {
+                    return <CodeBlock language={match?.[1] || "text"} code={content} />;
+                  }
+                  return <code>{children}</code>;
+                },
+                pre({ children }) {
+                  return <>{children}</>;
+                },
+              }}
+            >
+              {msg.content}
+            </ReactMarkdown>
             {isStreaming && (
               <motion.span
                 animate={{ opacity: [1, 0] }}
@@ -53,18 +72,19 @@ export default function ChatMessage({ msg, isStreaming = false, copiedId, onCopy
           </div>
         </div>
 
-        {/* Copy button */}
-        {!isStreaming && msg.content && (
-          <button
-            onClick={() => onCopy(msg.id, msg.content)}
-            className="absolute -bottom-2.5 left-2 opacity-0 group-hover:opacity-100 flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-800 border border-zinc-700 text-xs text-zinc-400 hover:text-white transition-all"
-          >
-            {copiedId === msg.id ? (
-              <><Check className="w-3 h-3 text-green-500" /> Copied</>
-            ) : (
-              <><Copy className="w-3 h-3" /> Copy</>
-            )}
-          </button>
+        {/* Action bar */}
+        {!isStreaming && msg.content && msg.id !== "streaming" && (
+          <MessageActions
+            msg={msg}
+            liked={liked}
+            disliked={disliked}
+            onLike={onLike}
+            onDislike={onDislike}
+            onShare={onShare}
+            onRegenerate={onRegenerate}
+            onContinue={onContinue}
+            onDelete={onDelete}
+          />
         )}
       </div>
     </motion.div>

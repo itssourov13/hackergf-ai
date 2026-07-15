@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Code2, Bug, BookOpen, Zap } from "lucide-react";
+import { Code2, Bug, BookOpen, Zap } from "lucide-react";
+import HackerAILogo from "./HackerAILogo";
 
 const SUGGESTIONS = [
   { icon: Code2, text: "Write a React component for a responsive navbar", color: "text-blue-400" },
@@ -16,12 +17,9 @@ export default function ChatEmptyState({ onPick }) {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
-        className="relative mb-6"
+        className="mb-6"
       >
-        <div className="absolute inset-0 bg-red-500/20 blur-2xl rounded-full" />
-        <div className="relative flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-red-600/20 to-zinc-900 border border-red-600/30">
-          <Sparkles className="w-9 h-9 text-red-400" />
-        </div>
+        <HackerAILogo size="xl" withGlow />
       </motion.div>
 
       <motion.h2
