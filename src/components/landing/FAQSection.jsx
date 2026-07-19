@@ -16,7 +16,7 @@ export default function FAQSection() {
             Frequently asked questions
           </h2>
           <p className="text-zinc-400 text-lg">
-            Everything you need to know about HackerAI.
+            Everything you need to know about Hacker gf.
           </p>
         </div>
 

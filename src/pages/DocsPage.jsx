@@ -8,10 +8,10 @@ import { cn } from "@/lib/utils";
 const GUIDES = [
   {
     id: "getting-started",
-    title: "Getting Started with HackerAI",
+    title: "Getting Started with Hacker gf",
     icon: Rocket,
     badge: "Beginner",
-    content: `Welcome to HackerAI! Here's how to get started:
+    content: `Welcome to Hacker gf! Here's how to get started:
 
 1. **Create an account** — Sign up and verify your email.
 2. **Explore the Dashboard** — Get an overview of your usage and projects.
@@ -26,7 +26,7 @@ Your free plan includes 100 AI messages, 50 file uploads, and 25 code executions
     title: "Using the AI Chat Effectively",
     icon: MessageSquare,
     badge: "Beginner",
-    content: `The AI Chat is your primary interface for interacting with HackerAI.
+    content: `The AI Chat is your primary interface for interacting with Hacker gf.
 
 **Tips for better results:**
 - Be specific — include language, framework, and error messages.
@@ -90,7 +90,7 @@ Your free plan includes 100 AI messages, 50 file uploads, and 25 code executions
     title: "API Keys & Programmatic Access",
     icon: Key,
     badge: "Advanced",
-    content: `Use API keys to access HackerAI programmatically from your applications.
+    content: `Use API keys to access Hacker gf programmatically from your applications.
 
 **Creating a key:**
 1. Go to the API Keys page.
@@ -115,7 +115,7 @@ Authorization: Bearer hkai_your_key_here
     title: "Billing & Subscription Plans",
     icon: CreditCard,
     badge: "Beginner",
-    content: `HackerAI offers four subscription plans:
+    content: `Hacker gf offers four subscription plans:
 
 **Free** — Perfect for trying out the platform.
 - 100 AI messages/month
@@ -149,7 +149,7 @@ export default function DocsPage() {
         <div className="p-2.5 rounded-xl bg-red-600/10 border border-red-600/30"><BookOpen className="w-5 h-5 text-red-400" /></div>
         <div>
           <h1 className="text-xl font-bold text-white">Documentation</h1>
-          <p className="text-sm text-zinc-500">Guides and tutorials to help you get the most out of HackerAI.</p>
+          <p className="text-sm text-zinc-500">Guides and tutorials to help you get the most out of Hacker gf.</p>
         </div>
       </div>
 

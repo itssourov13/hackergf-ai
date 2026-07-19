@@ -90,6 +90,10 @@
     @apply bg-background text-foreground font-body;
   }
 
+  button, [role="button"] {
+    touch-action: manipulation;
+  }
+
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;

@@ -97,7 +97,7 @@ export default function ModelsPage() {
           <CardContent className="p-5 text-center">
             <Check className="w-6 h-6 text-green-400 mx-auto mb-2" />
             <p className="font-medium text-white text-sm">Balanced</p>
-            <p className="text-xs text-zinc-500 mt-1">Use Automatic mode to let HackerAI pick the best model for each query.</p>
+            <p className="text-xs text-zinc-500 mt-1">Use Automatic mode to let Hacker gf pick the best model for each query.</p>
           </CardContent>
         </Card>
       </div>

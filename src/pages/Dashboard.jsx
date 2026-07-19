@@ -55,7 +55,7 @@ export default function Dashboard() {
           Welcome back, {user?.full_name?.split(" ")[0] || "Developer"}
         </h1>
         <p className="text-sm text-zinc-400">
-          Here's what's happening with your HackerAI workspace.
+          Here's what's happening with your Hacker gf workspace.
         </p>
       </div>
 

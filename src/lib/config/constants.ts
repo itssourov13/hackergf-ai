@@ -1,5 +1,5 @@
 export const APP_CONFIG = {
-  name: "HackerAI",
+  name: "Hacker gf",
   tagline: "AI-Powered Development Platform",
   description:
     "A production-ready AI SaaS platform for developers. Chat with AI, write code, execute programs, and manage files — all in one hacker-themed interface.",
@@ -24,14 +24,14 @@ export const SOCIAL_LINKS = {
 
 export const FAQ_ITEMS = [
   {
-    question: "What is HackerAI?",
+    question: "What is Hacker gf?",
     answer:
-      "HackerAI is a production-ready AI SaaS platform designed for developers. It combines AI chat, a code editor, secure code execution, and file management into a single hacker-themed interface.",
+      "Hacker gf is a production-ready AI SaaS platform designed for developers. It combines AI chat, a code editor, secure code execution, and file management into a single hacker-themed interface.",
   },
   {
     question: "Which AI models are supported?",
     answer:
-      "HackerAI supports multiple AI providers including GPT-5, Gemini, and Claude models. The architecture is designed to easily add new providers with minimal changes.",
+      "Hacker gf supports multiple AI providers including GPT-5, Gemini, and Claude models. The architecture is designed to easily add new providers with minimal changes.",
   },
   {
     question: "Is my code executed securely?",
@@ -41,12 +41,12 @@ export const FAQ_ITEMS = [
   {
     question: "Can I upload my own files?",
     answer:
-      "Absolutely. HackerAI supports PDF, DOCX, TXT, Markdown, JSON, CSV, ZIP, images, and source code files. Uploaded content can be used as context for AI analysis.",
+      "Absolutely. Hacker gf supports PDF, DOCX, TXT, Markdown, JSON, CSV, ZIP, images, and source code files. Uploaded content can be used as context for AI analysis.",
   },
   {
     question: "What are the pricing plans?",
     answer:
-      "HackerAI offers Free, Pro, and Team plans. The Free plan includes 50 AI messages per month. Pro and Team plans offer unlimited messages, more storage, and advanced features.",
+      "Hacker gf offers Free, Pro, and Team plans. The Free plan includes 50 AI messages per month. Pro and Team plans offer unlimited messages, more storage, and advanced features.",
   },
   {
     question: "Is there an Enterprise plan?",

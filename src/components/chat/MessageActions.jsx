@@ -18,7 +18,7 @@ export default function MessageActions({ msg, liked, disliked, onLike, onDislike
 
   const handleShare = async () => {
     if (navigator.share) {
-      try { await navigator.share({ title: "HackerAI Response", text: msg.content }); } catch (e) {}
+      try { await navigator.share({ title: "Hacker gf Response", text: msg.content }); } catch (e) {}
     } else {
       navigator.clipboard.writeText(msg.content);
     }
@@ -79,6 +79,7 @@ export default function MessageActions({ msg, liked, disliked, onLike, onDislike
 function ActionBtn({ children, onClick, active }) {
   return (
     <motion.button
+      type="button"
       whileTap={{ scale: 0.85 }}
       onClick={onClick}
       className={cn(

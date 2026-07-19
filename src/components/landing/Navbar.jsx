@@ -39,7 +39,7 @@ export default function Navbar() {
               <Terminal className="w-5 h-5 text-red-500" />
             </div>
             <span className="text-lg font-bold text-white tracking-tight">
-              Hacker<span className="text-red-500">AI</span>
+              Hacker <span className="text-red-500">gf</span>
             </span>
           </Link>
 

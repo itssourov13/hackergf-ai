@@ -158,7 +158,7 @@ function EmptyState() {
       <CardContent className="py-20 text-center">
         <BarChart3 className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
         <p className="text-zinc-400 font-medium">No usage data yet</p>
-        <p className="text-sm text-zinc-600 mt-1">Start using HackerAI to see your analytics here.</p>
+        <p className="text-sm text-zinc-600 mt-1">Start using Hacker gf to see your analytics here.</p>
       </CardContent>
     </Card>
   );

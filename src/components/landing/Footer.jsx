@@ -16,7 +16,7 @@ export default function Footer() {
                   <Terminal className="w-5 h-5 text-red-500" />
                 </div>
                 <span className="text-lg font-bold text-white">
-                  Hacker<span className="text-red-500">AI</span>
+                  Hacker <span className="text-red-500">gf</span>
                 </span>
               </Link>
               <p className="text-sm text-zinc-500 max-w-sm leading-relaxed">

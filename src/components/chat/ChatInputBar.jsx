@@ -47,6 +47,7 @@ export default function ChatInputBar({ input, setInput, onSend, onStop, isGenera
           {/* Circular + button */}
           <div className="pb-3 pt-3">
             <motion.button
+              type="button"
               whileTap={{ scale: 0.85, rotate: 90 }}
               whileHover={{ scale: 1.1 }}
               onClick={() => setBottomSheetOpen(true)}
@@ -63,7 +64,7 @@ export default function ChatInputBar({ input, setInput, onSend, onStop, isGenera
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Message HackerAI..."
+            placeholder="Message Hacker gf..."
             rows={1}
             disabled={disabled}
             className="flex-1 resize-none bg-transparent border-0 py-3.5 text-[15px] text-zinc-100 placeholder:text-zinc-600 focus:outline-none max-h-[200px] leading-relaxed"
@@ -76,6 +77,7 @@ export default function ChatInputBar({ input, setInput, onSend, onStop, isGenera
               {isGenerating ? (
                 <motion.button
                   key="stop"
+                  type="button"
                   initial={{ scale: 0.6, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.6, opacity: 0 }}
@@ -89,6 +91,7 @@ export default function ChatInputBar({ input, setInput, onSend, onStop, isGenera
               ) : (
                 <motion.button
                   key="send"
+                  type="button"
                   initial={{ scale: 0.6, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.6, opacity: 0 }}
@@ -113,7 +116,7 @@ export default function ChatInputBar({ input, setInput, onSend, onStop, isGenera
         </motion.div>
 
         <p className="text-[11px] text-zinc-600 mt-2 text-center">
-          HackerAI can make mistakes. Verify important information.
+          Hacker gf can make mistakes. Verify important information.
         </p>
       </div>
 

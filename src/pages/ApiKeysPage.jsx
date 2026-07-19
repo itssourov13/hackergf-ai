@@ -107,7 +107,7 @@ export default function ApiKeysPage() {
         <Card><CardContent className="py-20 text-center">
           <KeyRound className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
           <p className="text-zinc-400 font-medium">No API keys yet</p>
-          <p className="text-sm text-zinc-600 mt-1">Create a key to access HackerAI programmatically.</p>
+          <p className="text-sm text-zinc-600 mt-1">Create a key to access Hacker gf programmatically.</p>
         </CardContent></Card>
       ) : (
         <div className="space-y-3">
@@ -144,7 +144,7 @@ function Header() {
       <div className="p-2.5 rounded-xl bg-red-600/10 border border-red-600/30"><KeyRound className="w-5 h-5 text-red-400" /></div>
       <div>
         <h1 className="text-xl font-bold text-white">API Keys</h1>
-        <p className="text-sm text-zinc-500">Generate and manage keys for programmatic access to your HackerAI projects.</p>
+        <p className="text-sm text-zinc-500">Generate and manage keys for programmatic access to your Hacker gf projects.</p>
       </div>
     </div>
   );

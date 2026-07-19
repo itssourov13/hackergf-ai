@@ -43,8 +43,7 @@ export default function ChatMessage({ msg, isStreaming = false, likedMessages = 
       </div>
 
       <div className="group relative flex-1 min-w-0">
-        <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl rounded-tl-md px-4 py-3.5 backdrop-blur-sm">
-          <div className="md-content max-w-none">
+        <div className="md-content max-w-none py-1">
             <ReactMarkdown
               components={{
                 code({ className, children }) {
@@ -69,7 +68,6 @@ export default function ChatMessage({ msg, isStreaming = false, likedMessages = 
                 className="inline-block w-[7px] h-[16px] bg-red-500 rounded-sm align-middle ml-0.5 -mb-0.5"
               />
             )}
-          </div>
         </div>
 
         {/* Action bar */}

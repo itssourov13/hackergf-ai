@@ -11,7 +11,7 @@ const DEFAULT_FILES = [
   {
     name: "main.js",
     language: "javascript",
-    content: "// Welcome to HackerAI Code Editor\n// Start coding here...\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet('HackerAI'));\n",
+    content: "// Welcome to Hacker gf Code Editor\n// Start coding here...\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet('Hacker gf'));\n",
   },
 ];
 

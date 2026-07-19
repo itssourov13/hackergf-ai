@@ -12,7 +12,7 @@ export default function ChatSidebar({ chats, chatId, createNewChat, deleteChat, 
           <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-600/10 border border-red-600/30">
             <Terminal className="w-4 h-4 text-red-500" />
           </div>
-          <span className="font-bold text-white text-sm">Hacker<span className="text-red-500">AI</span></span>
+          <span className="font-bold text-white text-sm">Hacker <span className="text-red-500">gf</span></span>
         </Link>
         {onClose && (
           <button onClick={onClose} className="p-1.5 text-zinc-500 hover:text-white md:hidden">
@@ -51,8 +51,9 @@ export default function ChatSidebar({ chats, chatId, createNewChat, deleteChat, 
               <MessageSquare className="w-4 h-4 flex-shrink-0 opacity-60" />
               <span className="flex-1 text-sm truncate">{chat.title}</span>
               <button
+                type="button"
                 onClick={(e) => deleteChat(chat.id, e)}
-                className="opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-red-400 transition-all"
+                className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-zinc-600 hover:text-red-400 transition-all p-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

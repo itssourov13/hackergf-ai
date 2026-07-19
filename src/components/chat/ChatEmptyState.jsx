@@ -45,10 +45,11 @@ export default function ChatEmptyState({ onPick }) {
           return (
             <motion.button
               key={i}
+              type="button"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + i * 0.05 }}
-              whileHover={{ y: -2 }}
+              whileHover={{ scale: 1.02 }}
               onClick={() => onPick(s.text)}
               className="flex items-center gap-3 text-left p-3.5 rounded-xl border border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 hover:bg-zinc-900 transition-colors text-sm text-zinc-300 group"
             >
