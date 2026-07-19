@@ -43,32 +43,31 @@ export default function MessageActions({ msg, liked, disliked, onLike, onDislike
       <ActionBtn onClick={handleShare}><Share2 className="w-3.5 h-3.5" /></ActionBtn>
       <div className="relative">
         <ActionBtn onClick={() => setMoreOpen(!moreOpen)} active={moreOpen}><MoreHorizontal className="w-3.5 h-3.5" /></ActionBtn>
+        {moreOpen && <div className="fixed inset-0 z-10" onClick={() => setMoreOpen(false)} />}
         <AnimatePresence>
           {moreOpen && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setMoreOpen(false)} />
-              <motion.div
-                initial={{ opacity: 0, y: -5, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -5, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-                className="absolute left-0 top-full mt-1 w-52 rounded-xl border border-zinc-800 bg-zinc-900 shadow-2xl z-20 overflow-hidden"
-              >
-                {moreItems.map((item, i) => (
-                  <button
-                    key={i}
-                    onClick={() => { item.action(); setMoreOpen(false); }}
-                    className={cn(
-                      "w-full flex items-center gap-2.5 px-3 py-2.5 text-sm hover:bg-zinc-800 transition-colors text-left",
-                      item.danger ? "text-red-400 hover:bg-red-950/40" : "text-zinc-300"
-                    )}
-                  >
-                    <item.icon className="w-4 h-4 flex-shrink-0" />
-                    {item.label}
-                  </button>
-                ))}
-              </motion.div>
-            </>
+            <motion.div
+              key="more-menu"
+              initial={{ opacity: 0, y: -5, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -5, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="absolute left-0 top-full mt-1 w-52 rounded-xl border border-zinc-800 bg-zinc-900 shadow-2xl z-20 overflow-hidden"
+            >
+              {moreItems.map((item, i) => (
+                <button
+                  key={i}
+                  onClick={() => { item.action(); setMoreOpen(false); }}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 px-3 py-2.5 text-sm hover:bg-zinc-800 transition-colors text-left",
+                    item.danger ? "text-red-400 hover:bg-red-950/40" : "text-zinc-300"
+                  )}
+                >
+                  <item.icon className="w-4 h-4 flex-shrink-0" />
+                  {item.label}
+                </button>
+              ))}
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

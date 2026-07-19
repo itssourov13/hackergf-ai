@@ -376,31 +376,33 @@ export default function ChatPage() {
       {/* Sidebar - Mobile */}
       <AnimatePresence>
         {sidebarOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 z-40 md:hidden"
-              onClick={() => setSidebarOpen(false)}
+          <motion.div
+            key="sidebar-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, pointerEvents: "none" }}
+            className="fixed inset-0 bg-black/60 z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        {sidebarOpen && (
+          <motion.aside
+            key="sidebar-panel"
+            initial={{ x: -288 }}
+            animate={{ x: 0 }}
+            exit={{ x: -288 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed inset-y-0 left-0 w-72 z-50 md:hidden bg-black border-r border-zinc-800 flex flex-col"
+          >
+            <ChatSidebar
+              chats={chats}
+              chatId={chatId}
+              createNewChat={createNewChat}
+              deleteChat={deleteChat}
+              onNavigate={handleNavigate}
+              onClose={() => setSidebarOpen(false)}
             />
-            <motion.aside
-              initial={{ x: -288 }}
-              animate={{ x: 0 }}
-              exit={{ x: -288 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed inset-y-0 left-0 w-72 z-50 md:hidden bg-black border-r border-zinc-800 flex flex-col"
-            >
-              <ChatSidebar
-                chats={chats}
-                chatId={chatId}
-                createNewChat={createNewChat}
-                deleteChat={deleteChat}
-                onNavigate={handleNavigate}
-                onClose={() => setSidebarOpen(false)}
-              />
-            </motion.aside>
-          </>
+          </motion.aside>
         )}
       </AnimatePresence>
 
