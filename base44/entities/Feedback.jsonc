@@ -1,0 +1,44 @@
+{
+  "name": "Feedback",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Feature request or feedback title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the feedback"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "feature_request",
+        "bug_report",
+        "improvement",
+        "other"
+      ],
+      "default": "feature_request"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_review",
+        "planned",
+        "in_progress",
+        "completed",
+        "declined"
+      ],
+      "default": "open"
+    },
+    "votes": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "description"
+  ]
+}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
-import { Terminal, LayoutDashboard, MessageSquare, Code2, Upload, Settings, LogOut, Menu, X, CreditCard, Shield, BarChart3, KeyRound, FolderGit2, LifeBuoy, BookOpen, Activity, Keyboard, Gauge, Cpu, ShieldAlert, Command } from "lucide-react";
+import { Terminal, LayoutDashboard, MessageSquare, Code2, Upload, Settings, LogOut, Menu, X, CreditCard, Shield, BarChart3, KeyRound, FolderGit2, LifeBuoy, BookOpen, Activity, Keyboard, Gauge, Cpu, ShieldAlert, Command, ClipboardList, FileCode, Map, MessageCircle, Sparkles, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_SECTIONS = [
@@ -14,6 +14,8 @@ const NAV_SECTIONS = [
       { label: "Code Editor", path: "/editor", icon: Code2 },
       { label: "Files", path: "/files", icon: Upload },
       { label: "Projects", path: "/projects", icon: FolderGit2 },
+      { label: "Code Snippets", path: "/snippets", icon: FileCode },
+      { label: "User Profile", path: "/profile", icon: User },
     ],
   },
   {
@@ -21,6 +23,7 @@ const NAV_SECTIONS = [
     items: [
       { label: "Usage Analytics", path: "/analytics", icon: BarChart3 },
       { label: "Usage Quotas", path: "/quotas", icon: Gauge },
+      { label: "Usage Report", path: "/usage-report", icon: ClipboardList },
       { label: "Model Comparison", path: "/models", icon: Cpu },
       { label: "Billing", path: "/billing", icon: CreditCard },
     ],
@@ -29,6 +32,7 @@ const NAV_SECTIONS = [
     label: "Developer",
     items: [
       { label: "API Keys", path: "/api-keys", icon: KeyRound },
+      { label: "Zoya Persona", path: "/persona-settings", icon: Sparkles },
       { label: "Security Log", path: "/security-log", icon: ShieldAlert },
       { label: "Quick Commands", path: "/commands", icon: Command },
       { label: "Keyboard Shortcuts", path: "/shortcuts", icon: Keyboard },
@@ -39,7 +43,9 @@ const NAV_SECTIONS = [
     items: [
       { label: "Documentation", path: "/docs", icon: BookOpen },
       { label: "Support Center", path: "/support", icon: LifeBuoy },
-      { label: "System Status", path: "/status", icon: Activity },
+      { label: "System Status", path: "/system-status", icon: Activity },
+      { label: "Roadmap", path: "/roadmap", icon: Map },
+      { label: "Feedback Portal", path: "/feedback", icon: MessageCircle },
       { label: "Settings", path: "/settings", icon: Settings },
     ],
   },

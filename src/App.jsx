@@ -32,6 +32,13 @@ import QuotasPage from '@/pages/QuotasPage';
 import ModelsPage from '@/pages/ModelsPage';
 import SecurityLogPage from '@/pages/SecurityLogPage';
 import CommandsPage from '@/pages/CommandsPage';
+import UsageReportPage from '@/pages/UsageReportPage';
+import SystemStatusPage from '@/pages/SystemStatusPage';
+import RoadmapPage from '@/pages/RoadmapPage';
+import FeedbackPage from '@/pages/FeedbackPage';
+import PersonaSettingsPage from '@/pages/PersonaSettingsPage';
+import SnippetsPage from '@/pages/SnippetsPage';
+import ProfilePage from '@/pages/ProfilePage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -78,6 +85,13 @@ const AuthenticatedApp = () => {
           <Route path="/models" element={<ModelsPage />} />
           <Route path="/security-log" element={<SecurityLogPage />} />
           <Route path="/commands" element={<CommandsPage />} />
+          <Route path="/usage-report" element={<UsageReportPage />} />
+          <Route path="/system-status" element={<SystemStatusPage />} />
+          <Route path="/roadmap" element={<RoadmapPage />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
+          <Route path="/persona-settings" element={<PersonaSettingsPage />} />
+          <Route path="/snippets" element={<SnippetsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Route>
         {/* Full-screen protected routes */}

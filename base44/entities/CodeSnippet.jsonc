@@ -1,0 +1,39 @@
+{
+  "name": "CodeSnippet",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Snippet title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of what the snippet does"
+    },
+    "code": {
+      "type": "string",
+      "description": "The actual code content"
+    },
+    "language": {
+      "type": "string",
+      "description": "Programming language",
+      "default": "javascript"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "code",
+    "language"
+  ]
+}

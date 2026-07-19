@@ -38,6 +38,37 @@
     "ai_system_prompt": {
       "type": "string",
       "description": "Custom system prompt override"
+    },
+    "ai_tone": {
+      "type": "string",
+      "enum": [
+        "professional",
+        "casual",
+        "friendly",
+        "concise",
+        "detailed"
+      ],
+      "default": "friendly"
+    },
+    "ai_interaction_style": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "explanatory",
+        "socratic",
+        "collaborative"
+      ],
+      "default": "collaborative"
+    },
+    "ai_response_length": {
+      "type": "string",
+      "enum": [
+        "concise",
+        "balanced",
+        "detailed"
+      ],
+      "default": "balanced"
     }
-  }
+  },
+  "required": []
 }
