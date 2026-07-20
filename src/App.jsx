@@ -14,31 +14,34 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
-import Dashboard from '@/pages/Dashboard';
-import ChatPage from '@/pages/ChatPage';
-import EditorPage from '@/pages/EditorPage';
-import FilesPage from '@/pages/FilesPage';
-import SettingsPage from '@/pages/SettingsPage';
-import AdminPage from '@/pages/AdminPage';
-import BillingPage from '@/pages/BillingPage';
-import AnalyticsPage from '@/pages/AnalyticsPage';
-import ApiKeysPage from '@/pages/ApiKeysPage';
-import ProjectsPage from '@/pages/ProjectsPage';
-import SupportPage from '@/pages/SupportPage';
-import DocsPage from '@/pages/DocsPage';
-import StatusPage from '@/pages/StatusPage';
-import ShortcutsPage from '@/pages/ShortcutsPage';
-import QuotasPage from '@/pages/QuotasPage';
-import ModelsPage from '@/pages/ModelsPage';
-import SecurityLogPage from '@/pages/SecurityLogPage';
-import CommandsPage from '@/pages/CommandsPage';
-import UsageReportPage from '@/pages/UsageReportPage';
-import SystemStatusPage from '@/pages/SystemStatusPage';
-import RoadmapPage from '@/pages/RoadmapPage';
-import FeedbackPage from '@/pages/FeedbackPage';
-import PersonaSettingsPage from '@/pages/PersonaSettingsPage';
-import SnippetsPage from '@/pages/SnippetsPage';
-import ProfilePage from '@/pages/ProfilePage';
+import { lazy, Suspense } from 'react';
+import RouteLoader from '@/components/RouteLoader';
+
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const ChatPage = lazy(() => import('@/pages/ChatPage'));
+const EditorPage = lazy(() => import('@/pages/EditorPage'));
+const FilesPage = lazy(() => import('@/pages/FilesPage'));
+const SettingsPage = lazy(() => import('@/pages/SettingsPage'));
+const AdminPage = lazy(() => import('@/pages/AdminPage'));
+const BillingPage = lazy(() => import('@/pages/BillingPage'));
+const AnalyticsPage = lazy(() => import('@/pages/AnalyticsPage'));
+const ApiKeysPage = lazy(() => import('@/pages/ApiKeysPage'));
+const ProjectsPage = lazy(() => import('@/pages/ProjectsPage'));
+const SupportPage = lazy(() => import('@/pages/SupportPage'));
+const DocsPage = lazy(() => import('@/pages/DocsPage'));
+const StatusPage = lazy(() => import('@/pages/StatusPage'));
+const ShortcutsPage = lazy(() => import('@/pages/ShortcutsPage'));
+const QuotasPage = lazy(() => import('@/pages/QuotasPage'));
+const ModelsPage = lazy(() => import('@/pages/ModelsPage'));
+const SecurityLogPage = lazy(() => import('@/pages/SecurityLogPage'));
+const CommandsPage = lazy(() => import('@/pages/CommandsPage'));
+const UsageReportPage = lazy(() => import('@/pages/UsageReportPage'));
+const SystemStatusPage = lazy(() => import('@/pages/SystemStatusPage'));
+const RoadmapPage = lazy(() => import('@/pages/RoadmapPage'));
+const FeedbackPage = lazy(() => import('@/pages/FeedbackPage'));
+const PersonaSettingsPage = lazy(() => import('@/pages/PersonaSettingsPage'));
+const SnippetsPage = lazy(() => import('@/pages/SnippetsPage'));
+const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -59,6 +62,7 @@ const AuthenticatedApp = () => {
 
   // Render routes — ProtectedRoute handles auth for protected pages
   return (
+    <Suspense fallback={<RouteLoader />}>
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<Home />} />
@@ -102,6 +106,7 @@ const AuthenticatedApp = () => {
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </Suspense>
   );
 };
 

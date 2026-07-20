@@ -88,6 +88,10 @@
 
   body {
     @apply bg-background text-foreground font-body;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   button, [role="button"] {
@@ -97,6 +101,35 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Keyboard navigation focus indicator */
+  :focus-visible {
+    outline: 2px solid hsl(0 84% 60%);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Remove outline for mouse users */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Themed text selection */
+  ::selection {
+    background: hsl(0 84% 40% / 0.3);
+    color: hsl(0 0% 100%);
+  }
+
+  /* Respect reduced motion preferences for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
