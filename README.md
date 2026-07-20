@@ -1,156 +1,598 @@
-# HackerAI
+# Hacker gf — AI-Powered Development Platform
 
-A production-ready AI SaaS platform for developers. Chat with AI, write code, execute programs, and manage files — all in one hacker-themed interface.
+A production-ready AI SaaS platform for developers. Chat with AI, write code, execute programs, and manage files — all in one hacker-themed interface built on the Base44 platform.
 
-## Tech Stack
+---
 
-- **React** + **Vite** — Frontend framework
-- **Tailwind CSS** — Styling
-- **Base44** — Backend-as-a-Service (auth, database, AI integrations, file storage, analytics)
-- **React Router** — Routing
-- **React Markdown** — Markdown rendering
-- **Lucide React** — Icons
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Folder Structure](#folder-structure)
+- [Architecture Overview](#architecture-overview)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Environment Variables](#environment-variables)
+- [Running Locally](#running-locally)
+- [Build](#build)
+- [Preview](#preview)
+- [Deployment](#deployment)
+- [Base44 Development Workflow](#base44-development-workflow)
+- [How to Download / Eject from Base44](#how-to-download--eject-from-base44)
+- [How to Continue Development Locally](#how-to-continue-development-locally)
+- [Git Workflow](#git-workflow)
+- [How to Deploy After Ejecting from Base44](#how-to-deploy-after-ejecting-from-base44)
+- [Troubleshooting](#troubleshooting)
+- [FAQ](#faq)
+- [Security Notes](#security-notes)
+- [License](#license)
+- [Credits](#credits)
+
+---
+
+## Overview
+
+**Hacker gf** is an all-in-one AI-powered development environment that streamlines coding, document processing, and terminal automation for professional software engineering teams. The AI assistant is named **Zoya** — an elite AI coding assistant embedded directly in the developer platform.
+
+The application is built on the **Base44** Backend-as-a-Service platform, which provides authentication, database, AI model integrations, file storage, and analytics out of the box.
+
+---
 
 ## Features
 
-### Phase 0 — Foundation
-- Project structure with modular configuration
-- Centralized config files for plans, roles, upload limits, feature flags, AI models, and app constants
-- TypeScript-ready configuration modules
-
-### Phase 1 — UI Foundation
-- Dark hacker aesthetic with red accent color
-- Sticky responsive navbar with mobile menu
-- Landing page with Hero, Features, How It Works, Technology, Pricing, and FAQ sections
-- Reusable UI components: Button, Card, Container, Section, Badge
-- Smooth scrolling and fade-in animations
-- Fully responsive (mobile-first)
-
-### Phase 2 — Authentication
-- Sign In / Sign Up / Forgot Password / Reset Password pages (built-in)
-- Session management via Base44 Auth
-- Protected routes with automatic redirect to login
-- Google OAuth support
-- User menu in app sidebar
-
-### Phase 3 — Database
-- **Chat** — AI conversation records
-- **Message** — Individual chat messages (user/assistant/system)
-- **Project** — Code projects with files
-- **File** — Uploaded files with extracted content
-- **Subscription** — Billing and usage tracking
-- **Settings** — User preferences
-- **UsageRecord** — Usage metrics tracking
-- **ApiKey** — API key management
-
-### Phase 4 — AI Chat System
-- Real-time AI chat with streaming-style loading
-- Multiple AI model support (GPT-5, Gemini, Claude)
-- Conversation sidebar with create/delete/switch
-- Markdown rendering with syntax highlighting
-- Copy message button
-- Model selector with premium badges
+### AI Chat System
+- Real-time AI chat with streaming-style loading and thinking indicators
+- Multi-provider model support: GPT-5 Mini/4/5, Gemini 3 Flash/3.1 Pro, Claude Sonnet 4.6, Claude Opus 4.6–4.8, Claude Sonnet 5
+- Conversation sidebar with create, delete, pin, and switch
+- Markdown rendering with syntax-highlighted code blocks
+- Copy message, regenerate response, and model selector with premium badges
 - Suggested prompts for empty state
-- Auto-scroll and typing indicator
-- Error recovery
+- Auto-scroll and animated typing indicator
 
-### Phase 5 — Code Editor
-- Multi-tab code editor with file management
-- Create/rename/delete files
+### Code Editor
+- Multi-tab code editor with file management (create, rename, delete)
 - Unsaved changes indicator
-- Save to database (auto-save ready)
+- Save to database via Base44 entities
 - Language support: JavaScript, TypeScript, Python, HTML, CSS, JSON, Markdown, Bash
-- Integrated terminal with simulated JavaScript execution
-- Run code and view output
-- Dark hacker theme
+- Integrated terminal with browser-sandboxed JavaScript execution
+- Dark hacker theme with configurable font size, word wrap, and minimap
 
-### Phase 7 — File Upload & Document Processing
+### File Upload & Document Processing
 - Drag & drop upload with file picker
-- Multiple file upload support
-- File type validation and size limits
-- Content extraction (PDF, DOCX, TXT, code files)
-- File manager with search, preview, and metadata
-- Configurable upload limits per file type
-- Word count, character count, page count
+- File type validation and per-type size limits
+- Content extraction for PDF, DOCX, TXT, Markdown, JSON, CSV, and source code files
+- File manager with search, preview, and metadata (word count, character count, page count)
 
-### Phase 9 — Billing & Roles (Configuration)
-- Configurable subscription plans (Free, Pro, Team, Enterprise)
-- Role system (Guest, User, Pro, Team, Admin)
-- Feature flag system with plan-based access
-- Admin override configuration
-- Usage tracking infrastructure
+### Billing & Subscription
+- Four subscription tiers: Free, Pro, Team, Enterprise
+- Monthly and yearly billing cycles
+- Usage tracking for AI messages, tokens, storage, file uploads, code executions, and API requests
+- Plan-based feature flag system with admin override
 
-## Project Structure
+### Administration
+- Admin-only dashboard with system statistics, user management, and feature flag controls
+- Security log for tracking user actions and system events
+- API key management with permissions and expiration
+- Support ticket system
+
+### Additional Pages
+- **Dashboard** — Central hub with stats and quick actions
+- **Usage Analytics** — Charts and metrics visualizations (Recharts)
+- **Usage Quotas & Reports** — Plan-based quota tracking
+- **Model Comparison** — AI model specifications and capabilities
+- **API Keys** — Key generation and management
+- **Projects** — Code project management
+- **Code Snippets** — Reusable code snippet library with favorites and tags
+- **Settings** — AI preferences, editor configuration, notifications
+- **Zoya Persona Settings** — AI tone, interaction style, response length, system prompt
+- **User Profile** — Account details and preferences
+- **Support Center** — Support ticket submission
+- **Documentation** — In-app help guides
+- **System Status** — Service health and incident history
+- **Roadmap** — Product roadmap visualization
+- **Feedback Portal** — Feature requests and bug reports with voting
+- **Security Log** — Audit trail of security events
+- **Quick Commands** — Command reference
+- **Keyboard Shortcuts** — Shortcut reference
+- **Status Page** — Real-time service status
+
+### UI / UX
+- Dark hacker aesthetic with red accent color
+- Fully responsive (mobile-first design)
+- Smooth scrolling and fade-in animations
+- Glassmorphism chat interface with Framer Motion animations
+- Sectioned sidebar navigation
+- Accessible focus states, reduced-motion support, and keyboard navigation
+- SEO-optimized with structured data, Open Graph, and Twitter Cards
+
+---
+
+## Tech Stack
+
+| Category | Technology |
+|---|---|
+| **Frontend Framework** | React 18 |
+| **Build Tool** | Vite 6 |
+| **Styling** | Tailwind CSS 3 + shadcn/ui (New York style, neutral base) |
+| **Routing** | React Router DOM 6 |
+| **State / Data Fetching** | TanStack React Query 5 |
+| **Animations** | Framer Motion 11 |
+| **Icons** | Lucide React |
+| **Charts** | Recharts 2 |
+| **Markdown** | React Markdown 9 |
+| **Forms** | React Hook Form 7 + Zod |
+| **Backend-as-a-Service** | Base44 SDK (`@base44/sdk`) |
+| **Vite Plugin** | `@base44/vite-plugin` |
+| **3D Graphics** | Three.js |
+| **Maps** | React Leaflet |
+| **Drag & Drop** | @hello-pangea/dnd |
+| **Date Handling** | date-fns, moment |
+| **Type Checking** | TypeScript (jsconfig.json with checkJs) |
+| **Linting** | ESLint 9 with React, React Hooks, and Unused Imports plugins |
+| **CSS Processing** | PostCSS + Autoprefixer |
+| **Stripe** | @stripe/react-stripe-js, @stripe/stripe-js |
+
+---
+
+## Folder Structure
 
 ```
-src/
-├── components/
-│   ├── landing/          # Landing page sections
-│   │   ├── Navbar.jsx
-│   │   ├── Footer.jsx
-│   │   ├── Hero.jsx
-│   │   ├── FeaturesSection.jsx
-│   │   ├── HowItWorksSection.jsx
-│   │   ├── TechStackSection.jsx
-│   │   ├── PricingSection.jsx
-│   │   └── FAQSection.jsx
-│   ├── ui/               # Reusable UI components
-│   │   ├── button-custom.jsx
-│   │   ├── card-custom.jsx
-│   │   ├── badge-custom.jsx
-│   │   ├── container.jsx
-│   │   └── section.jsx
-│   ├── AppLayout.jsx     # Authenticated app layout with sidebar
-│   └── ProtectedRoute.jsx
-├── pages/
-│   ├── Home.jsx          # Landing page
-│   ├── Dashboard.jsx     # App dashboard
-│   ├── ChatPage.jsx      # AI chat interface
-│   ├── EditorPage.jsx    # Code editor
-│   ├── FilesPage.jsx     # File manager
-│   ├── SettingsPage.jsx  # User settings
-│   ├── Login.jsx         # Auth (built-in)
-│   ├── Register.jsx      # Auth (built-in)
-│   ├── ForgotPassword.jsx
-│   └── ResetPassword.jsx
-├── lib/
-│   └── config/           # Centralized configuration
-│       ├── plans.ts      # Subscription plans
-│       ├── roles.ts      # User roles & permissions
-│       ├── uploadLimits.ts
-│       ├── featureFlags.ts
-│       ├── aiProviders.ts
-│       └── constants.ts  # App constants
-└── App.jsx               # Router
-
-base44/
-└── entities/             # Database schemas
-    ├── Chat.jsonc
-    ├── Message.jsonc
-    ├── Project.jsonc
-    ├── File.jsonc
-    ├── Subscription.jsonc
-    ├── Settings.jsonc
-    ├── UsageRecord.jsonc
-    └── ApiKey.jsonc
+hacker-gf/
+├── base44/
+│   ├── config.jsonc              # Base44 site configuration
+│   └── entities/                 # Database entity schemas (JSON)
+├── public/                       # Static assets
+├── src/
+│   ├── api/
+│   │   └── base44Client.js       # Pre-initialized Base44 SDK client
+│   ├── components/
+│   │   ├── chat/                 # Chat-specific components
+│   │   ├── feedback/             # Feedback components
+│   │   ├── landing/              # Landing page sections
+│   │   ├── snippets/             # Code snippet components
+│   │   ├── ui/                   # shadcn/ui primitives
+│   │   ├── AppLayout.jsx         # Authenticated app layout with sidebar
+│   │   ├── ErrorBoundary.jsx     # Global error boundary
+│   │   ├── ProtectedRoute.jsx    # Route auth guard
+│   │   └── RouteLoader.jsx       # Suspense fallback loader
+│   ├── hooks/                    # Custom React hooks
+│   ├── lib/
+│   │   ├── config/               # Centralized configuration
+│   │   ├── AuthContext.jsx       # Authentication context provider
+│   │   ├── app-params.js         # App parameter extraction
+│   │   ├── PageNotFound.jsx      # 404 page
+│   │   ├── query-client.js       # React Query client
+│   │   ├── usage.js              # Usage tracking utilities
+│   │   └── utils.js              # Shared utility functions
+│   ├── pages/                    # Application pages (25+)
+│   ├── utils/
+│   │   └── index.ts              # Shared utilities
+│   ├── App.jsx                   # Router and app composition
+│   ├── main.jsx                  # React entry point
+│   └── index.css                 # Global styles & design tokens
+├── index.html                    # HTML entry with SEO meta tags
+├── package.json                  # Dependencies and scripts
+├── vite.config.js                # Vite configuration
+├── tailwind.config.js            # Tailwind CSS configuration
+├── postcss.config.js             # PostCSS configuration
+├── jsconfig.json                 # TypeScript path aliases
+├── eslint.config.js              # ESLint configuration
+├── components.json               # shadcn/ui configuration
+├── AGENTS.md                     # AI agent instructions
+├── CLAUDE.md                     # Claude AI instructions
+└── README.md                     # This file
 ```
+
+> See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) for a detailed folder-by-folder breakdown.
+
+---
+
+## Architecture Overview
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                        Browser (Client)                       │
+│                                                               │
+│  ┌─────────────┐  ┌──────────────┐  ┌────────────────────┐  │
+│  │  React App   │  │  React Router │  │  AuthContext       │  │
+│  │  (App.jsx)   │  │  (6 routes)   │  │  (AuthProvider)    │  │
+│  └──────┬───────┘  └──────┬───────┘  └─────────┬──────────┘  │
+│         │                 │                     │              │
+│  ┌──────┴─────────────────┴─────────────────────┴──────────┐  │
+│  │              Base44 SDK Client (base44Client.js)        │  │
+│  │         (entities, auth, integrations, analytics)       │  │
+│  └──────────────────────────┬──────────────────────────────┘  │
+└──────────────────────────────┼───────────────────────────────┘
+                               │ HTTPS / API
+┌──────────────────────────────┼───────────────────────────────┐
+│                      Base44 Platform (BaaS)                    │
+│                                                               │
+│  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌─────────────┐  │
+│  │   Auth   │  │ Database │  │   AI     │  │   File      │  │
+│  │ (JWT,    │  │ (Mongo)  │  │   LLM    │  │   Storage   │  │
+│  │  OAuth)  │  │          │  │   APIs   │  │             │  │
+│  └─────────┘  └──────────┘  └──────────┘  └─────────────┘  │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Key architectural decisions:**
+- **Base44 SDK** handles auth, database CRUD, AI invocations, file uploads, and analytics — no custom backend code required.
+- **Lazy loading**: All authenticated pages are code-split via `React.lazy()` + `Suspense` for smaller initial bundles.
+- **Centralized configuration**: Plans, roles, AI models, feature flags, upload limits, and app constants live in `src/lib/config/`.
+- **Design tokens**: CSS custom properties in `src/index.css` mapped through `tailwind.config.js`.
+- **Data isolation**: Entity queries are filtered by `created_by_id` for per-user data isolation.
+
+---
+
+## Prerequisites
+
+- **Node.js** 18+ (recommended 20+)
+- **npm** 10+ (or yarn / pnpm — examples use npm)
+- A **Base44 account** with an app created (for hosted backend)
+- A modern browser with JavaScript enabled
+
+---
+
+## Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd hacker-gf
+
+# Install dependencies
+npm install
+```
+
+---
 
 ## Environment Variables
 
-The following environment variables are managed by the Base44 platform:
-- Authentication tokens
-- Database connection
-- AI model API keys (via Base44 integrations)
-- File storage (via Base44 UploadFile)
+The project uses Vite environment variables (prefixed with `VITE_`). These are managed by the Base44 platform but can be overridden locally:
 
-## Local Development
+| Variable | Description | Required |
+|---|---|---|
+| `VITE_BASE44_APP_ID` | Your Base44 application ID | Yes |
+| `VITE_BASE44_FUNCTIONS_VERSION` | Base44 functions version | No |
+| `VITE_BASE44_APP_BASE_URL` | Base44 app base URL | No |
 
-The project runs on the Base44 platform. All changes are reflected in real-time in the preview.
+Create a `.env.local` file in the project root:
+
+```env
+VITE_BASE44_APP_ID=your_app_id_here
+VITE_BASE44_FUNCTIONS_VERSION=
+VITE_BASE44_APP_BASE_URL=
+```
+
+> **Note**: When running on the Base44 platform, these values are injected automatically. They are only needed for local development against a custom Base44 backend.
+
+Additionally, the app extracts runtime parameters from the URL and `localStorage` (see `src/lib/app-params.js`):
+- `app_id` — Base44 app ID
+- `access_token` — Auth token (removed from URL after extraction)
+- `from_url` — Post-login redirect destination
+- `functions_version` — Functions version override
+- `app_base_url` — App base URL override
+
+---
+
+## Running Locally
+
+### Option 1: Frontend-only (against hosted Base44 backend)
+
+```bash
+npm run dev
+```
+
+This starts the Vite dev server with hot module replacement (HMR). The app connects to the hosted Base44 backend.
+
+### Option 2: Full local Base44 backend
+
+```bash
+base44 dev
+```
+
+This runs the Base44 CLI, which can start both the local backend and the frontend together. See the [Base44 CLI documentation](https://docs.base44.com/developers/references/cli/get-started/overview.md) for setup.
+
+The dev server runs at `http://localhost:5173` by default.
+
+---
+
+## Build
+
+```bash
+# Type-check (optional)
+npm run typecheck
+
+# Lint (optional)
+npm run lint
+
+# Production build
+npm run build
+```
+
+The build outputs to `./dist` as configured in `base44/config.jsonc` (`outputDirectory: "./dist"`).
+
+---
+
+## Preview
+
+```bash
+# Preview the production build locally
+npm run preview
+```
+
+This serves the `./dist` folder on a local server for testing before deployment.
+
+---
 
 ## Deployment
 
-The app is deployed via the Base44 platform and is compatible with Vercel deployment.
+### On Base44 Platform
+
+The app is deployed via the Base44 platform. The `base44/config.jsonc` file defines:
+- `installCommand`: `npm install`
+- `buildCommand`: `npm run build`
+- `serveCommand`: `npm run dev`
+- `outputDirectory`: `./dist`
+
+### After Ejecting
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for step-by-step instructions for deploying to Vercel, Netlify, Cloudflare Pages, or a VPS with Nginx.
+
+---
+
+## Base44 Development Workflow
+
+1. **Create an app** on the [Base44 platform](https://base44.com).
+2. The platform generates the app ID and injects it at runtime.
+3. Develop using the Base44 Builder (chat-based AI development) or locally with `npm run dev`.
+4. Entities, auth, AI integrations, and file storage are managed by the Base44 SDK.
+5. Changes made in the Builder are reflected in the codebase and vice versa.
+
+### Key Base44 SDK Operations
+
+```javascript
+import { base44 } from '@/api/base44Client';
+
+// Entity CRUD
+base44.entities.Chat.list();
+base44.entities.Chat.filter({ created_by_id: user.id }, '-created_date', 20);
+base44.entities.Chat.create({ title: "New Chat" });
+base44.entities.Chat.update(id, { title: "Updated" });
+base44.entities.Chat.delete(id);
+
+// AI Integration
+base44.integrations.Core.InvokeLLM({ prompt: "Hello", model: "automatic" });
+
+// File Upload
+base44.integrations.Core.UploadFile({ file });
+
+// Auth
+base44.auth.me();
+base44.auth.isAuthenticated();
+base44.auth.logout();
+
+// Analytics
+base44.analytics.track({ eventName: "user_action", properties: {} });
+```
+
+---
+
+## How to Download / Eject from Base44
+
+To eject the project from the Base44 platform and run it entirely independently:
+
+1. **Download the codebase**: Export your project from the Base44 Builder dashboard, or clone the repository if you have Git access.
+
+2. **Review Base44 dependencies**: The project depends on:
+   - `@base44/sdk` — The Base44 SDK client
+   - `@base44/vite-plugin` — Vite plugin for Base44 integration
+
+3. **Environment setup**: Create a `.env.local` file with your Base44 app ID:
+   ```env
+   VITE_BASE44_APP_ID=your_app_id
+   ```
+
+4. **Install and run**:
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+5. **Full ejection** (optional): To completely remove Base44 dependencies, you would need to:
+   - Replace `src/api/base44Client.js` with your own API client
+   - Replace all `base44.entities.*` calls with your own backend API calls
+   - Replace `base44.auth.*` with your own auth solution
+   - Replace `base44.integrations.Core.*` with direct API calls to AI providers, file storage, etc.
+   - Remove `@base44/sdk` and `@base44/vite-plugin` from `package.json`
+   - Update `vite.config.js` to remove the Base44 plugin
+
+   > **Warning**: Full ejection is a significant effort and requires replacing all backend functionality.
+
+---
+
+## How to Continue Development Locally
+
+1. **Clone and install**:
+   ```bash
+   git clone <repository-url>
+   cd hacker-gf
+   npm install
+   ```
+
+2. **Set up environment**:
+   ```bash
+   cp .env.example .env.local  # If .env.example exists
+   # Edit .env.local with your Base44 app ID
+   ```
+
+3. **Start the dev server**:
+   ```bash
+   npm run dev
+   ```
+
+4. **Make changes**: The Vite dev server provides instant HMR. Changes to any file in `src/` are reflected immediately.
+
+5. **Code quality checks**:
+   ```bash
+   npm run lint       # Lint the code
+   npm run typecheck  # Type-check with TypeScript
+   npm run build      # Verify production build succeeds
+   ```
+
+---
+
+## Git Workflow
+
+```bash
+# Create a feature branch
+git checkout -b feature/your-feature-name
+
+# Make your changes, then stage
+git add .
+
+# Commit with a descriptive message
+git commit -m "feat: add new feature"
+
+# Push to remote
+git push origin feature/your-feature-name
+
+# Create a pull request on GitHub
+```
+
+### Commit Message Convention
+
+Follow conventional commits:
+- `feat:` — New feature
+- `fix:` — Bug fix
+- `docs:` — Documentation changes
+- `style:` — Code style changes (no logic changes)
+- `refactor:` — Code refactoring
+- `test:` — Test additions
+- `chore:` — Build/tooling changes
+
+---
+
+## How to Deploy After Ejecting from Base44
+
+### Quick Deploy to Vercel
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+Set environment variables in the Vercel dashboard:
+- `VITE_BASE44_APP_ID`
+
+### Other Platforms
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions for:
+- Vercel
+- Netlify
+- Cloudflare Pages
+- VPS with Nginx
+
+---
+
+## Troubleshooting
+
+### App shows a blank white screen
+- Check browser console for JavaScript errors
+- Verify `VITE_BASE44_APP_ID` is set in `.env.local`
+- Ensure all imports resolve correctly (check for typos in `@/` alias paths)
+- Run `npm run build` to check for build errors
+
+### Authentication redirect loop
+- Clear `localStorage` and try again
+- Verify the Base44 app ID matches your account
+- Check that the auth callback URL is correct
+
+### API calls fail with 401/403
+- Your session token may have expired — log out and log back in
+- Verify your Base44 subscription is active
+- Check that your app ID is correct
+
+### Build fails
+- Run `npm install` to ensure all dependencies are installed
+- Run `npm run lint` to check for code errors
+- Check for missing imports or syntax errors
+- Ensure Node.js version is 18+
+
+### Lazy-loaded pages don't load
+- Check network tab for failed chunk requests
+- Verify `RouteLoader` component is imported in `App.jsx`
+- Ensure the Vite dev server is running
+
+### Styles are missing
+- Run `npm install` to ensure Tailwind CSS is installed
+- Check that `src/index.css` is imported in `src/main.jsx`
+- Verify `tailwind.config.js` content paths are correct
+
+---
+
+## FAQ
+
+### What is Hacker gf?
+Hacker gf is a production-ready AI SaaS platform designed for developers. It combines AI chat, a code editor, secure code execution, and file management into a single hacker-themed interface.
+
+### Who is Zoya?
+Zoya is the name of the AI assistant embedded in Hacker gf. When the assistant refers to itself, it always introduces itself as "Zoya."
+
+### Which AI models are supported?
+The platform supports GPT-5 Mini, GPT-5.4, GPT-5.5, Gemini 3 Flash, Gemini 3.1 Pro, Claude Sonnet 4.6, Claude Opus 4.6–4.8, Claude Sonnet 5, and an "Automatic" mode that selects the best model.
+
+### Is my code executed securely?
+Code execution happens in a browser-sandboxed environment. JavaScript code is executed client-side in an isolated context. Your code never runs on the application server.
+
+### Can I upload my own files?
+Yes. The platform supports PDF, DOCX, TXT, Markdown, JSON, CSV, ZIP, images, and source code files with automatic content extraction.
+
+### What are the pricing plans?
+Four plans are available: Free (50 AI messages/month, 1 GB storage), Pro ($20/month, unlimited messages, 25 GB), Team ($50/month, 100 GB shared storage), and Enterprise (custom pricing, unlimited everything).
+
+### Is there an API?
+API key management is available in the app. Keys can be created with specific permissions and expiration dates.
+
+### Can I self-host?
+Yes. After ejecting from Base44, the app can be deployed to any static hosting platform. See [DEPLOYMENT.md](./DEPLOYMENT.md) for instructions.
+
+---
+
+## Security Notes
+
+- **Authentication**: JWT-based auth managed by the Base44 platform. Supports email/password and Google OAuth.
+- **Authorization**: Role-based access control with roles: guest, user, pro, team, admin. Admins have full system access.
+- **Protected routes**: All authenticated pages are guarded by `ProtectedRoute` which checks auth state before rendering.
+- **Data isolation**: Entity queries are filtered by `created_by_id` to ensure users only access their own data.
+- **Input validation**: Forms use React Hook Form with Zod schema validation.
+- **Environment variables**: Secrets are managed by the Base44 platform. Never commit `.env.local` or API keys to the repository.
+- **Security logging**: The `SecurityLog` entity tracks security-relevant actions (logins, API key creation, etc.).
+- **Code execution**: Browser-sandboxed — no server-side execution of user code.
+- **Error handling**: Global `ErrorBoundary` catches unhandled errors and provides recovery options.
+
+> **Note**: The app does not implement CSRF tokens or rate limiting at the frontend level — these are handled by the Base44 platform.
+
+---
 
 ## License
 
-© HackerAI. All rights reserved.
+© Hacker gf. All rights reserved.
+
+> **License Placeholder**: This project is currently proprietary. If open-sourcing, replace this section with an appropriate license (e.g., MIT, Apache 2.0) and include the full license text in a `LICENSE` file.
+
+---
+
+## Credits
+
+- **Platform**: [Base44](https://base44.com) — Backend-as-a-Service
+- **UI Components**: [shadcn/ui](https://ui.shadcn.com) (New York style)
+- **Icons**: [Lucide](https://lucide.dev)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Charts**: [Recharts](https://recharts.org)
+- **Markdown**: [React Markdown](https://github.com/remarkjs/react-markdown)
+- **AI Models**: OpenAI (GPT-5), Google (Gemini), Anthropic (Claude)
