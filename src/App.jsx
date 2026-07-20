@@ -15,6 +15,7 @@ import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import { lazy, Suspense } from 'react';
+import RouteLoader from '@/components/RouteLoader';
 
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const ChatPage = lazy(() => import('@/pages/ChatPage'));
@@ -61,7 +62,7 @@ const AuthenticatedApp = () => {
 
   // Render routes — ProtectedRoute handles auth for protected pages
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<RouteLoader />}>
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<Home />} />
