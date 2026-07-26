@@ -55,8 +55,24 @@ export default function ChatPage() {
 
   const loadChats = async () => {
     try {
-      const data = await base44.entities.Chat.filter({}, "-last_message_at", 50);
-      setChats(data);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+  
+      if (!user) {
+        setChats([]);
+        return;
+      }
+  
+      const { data, error } = await supabase
+        .from("chats")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("last_message_at", { ascending: false });
+  
+      if (error) throw error;
+  
+      setChats(data || []);
     } catch (err) {
       console.error("Failed to load chats:", err);
     }
@@ -82,9 +98,17 @@ export default function ChatPage() {
 
   const loadMessages = async (id) => {
     setLoading(true);
+  
     try {
-      const data = await base44.entities.Message.filter({ chat_id: id }, "created_date", 100);
-      setMessages(data);
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("chat_id", id)
+        .order("created_at", { ascending: true });
+  
+      if (error) throw error;
+  
+      setMessages(data || []);
     } catch (err) {
       console.error("Failed to load messages:", err);
     } finally {
@@ -103,11 +127,28 @@ export default function ChatPage() {
 
   const deleteChat = async (id, e) => {
     e?.stopPropagation();
+  
     if (!confirm("Delete this conversation?")) return;
+  
     try {
-      await base44.entities.Chat.delete(id);
-      await base44.entities.Message.deleteMany({ chat_id: id });
+      // Delete messages first
+      const { error: msgError } = await supabase
+        .from("messages")
+        .delete()
+        .eq("chat_id", id);
+  
+      if (msgError) throw msgError;
+  
+      // Delete chat
+      const { error: chatError } = await supabase
+        .from("chats")
+        .delete()
+        .eq("id", id);
+  
+      if (chatError) throw chatError;
+  
       setChats(chats.filter((c) => c.id !== id));
+  
       if (chatId === id) {
         navigate("/chat");
         setMessages([]);
@@ -148,100 +189,219 @@ export default function ChatPage() {
   const handleSend = async () => {
     const content = input.trim();
     if (!content || phase !== "idle") return;
-
+  
     setInput("");
     setAttachments([]);
     setPhase("thinking");
-
+  
     let currentChatId = chatId;
     let msgCount = messages.length;
-
+  
     try {
-      // Create chat if none selected
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+  
+      if (!user) throw new Error("User not authenticated");
+  
+      // Create new chat if none exists
       if (!currentChatId) {
-        const title = content.slice(0, 50) + (content.length > 50 ? "..." : "");
-        const newChat = await base44.entities.Chat.create({
-          title,
-          model: selectedModel,
-          system_prompt: SYSTEM_PROMPT,
-          last_message_at: new Date().toISOString(),
-          message_count: 0,
-        });
+        const title =
+          content.slice(0, 50) + (content.length > 50 ? "..." : "");
+  
+        const { data: newChat, error: chatError } = await supabase
+          .from("chats")
+          .insert({
+            user_id: user.id,
+            title,
+            model: selectedModel,
+            system_prompt: SYSTEM_PROMPT,
+            last_message_at: new Date().toISOString(),
+            message_count: 0,
+          })
+          .select()
+          .single();
+  
+        if (chatError) throw chatError;
+  
         currentChatId = newChat.id;
+  
         navigate(`/chat/${currentChatId}`);
-        setChats([newChat, ...chats]);
+  
+        setChats((prev) => [newChat, ...prev]);
       }
-
+  
       // Save user message
-      const userMsg = await base44.entities.Message.create({
-        chat_id: currentChatId,
-        role: "user",
-        content,
-      });
+      const { data: userMsg, error: userError } = await supabase
+        .from("messages")
+        .insert({
+          chat_id: currentChatId,
+          role: "user",
+          content,
+        })
+        .select()
+        .single();
+  
+      if (userError) throw userError;
+  
       setMessages((prev) => [...prev, userMsg]);
       msgCount += 1;
-
-      // Build conversation context
+  
+  
+      // Build context
       const recentMessages = [...messages, userMsg].slice(-10);
+  
       const contextStr = recentMessages
         .map((m) => {
-          if (m.role === "user") return `User: ${m.content}`;
-          if (m.role === "assistant") return `Assistant: ${m.content}`;
+          if (m.role === "user")
+            return `User: ${m.content}`;
+  
+          if (m.role === "assistant")
+            return `Assistant: ${m.content}`;
+  
           return "";
         })
         .filter(Boolean)
         .join("\n\n");
-
-      const fullPrompt = `${SYSTEM_PROMPT}\n\nConversation history:\n${contextStr}\n\nPlease respond to the user's latest message.`;
-
-      // Call AI
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: fullPrompt,
-        model: selectedModel === "automatic" ? undefined : selectedModel,
+  
+  
+      const fullPrompt = `${SYSTEM_PROMPT}
+  
+  Conversation history:
+  ${contextStr}
+  
+  Please respond to the user's latest message.`;
+  
+  
+      // AI API call
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: fullPrompt,
+          model:
+            selectedModel === "automatic"
+              ? undefined
+              : selectedModel,
+        }),
       });
-
-      const assistantContent = typeof response === "string" ? response : JSON.stringify(response);
-
-      // Stream the response
+  
+  
+      if (!response.ok) {
+        throw new Error("AI request failed");
+      }
+  
+  
+      const result = await response.json();
+  
+      const assistantContent =
+        typeof result === "string"
+          ? result
+          : result.message || result.content;
+  
+  
+      // Streaming
       await new Promise((resolve) => {
-        startStreaming(assistantContent, (aborted) => resolve(aborted));
+        startStreaming(
+          assistantContent,
+          () => resolve()
+        );
       });
-
+  
+  
       // Save assistant message
-      const assistantMsg = await base44.entities.Message.create({
-        chat_id: currentChatId,
-        role: "assistant",
-        content: assistantContent,
-        model: selectedModel,
-      });
-
-      setMessages((prev) => [...prev, assistantMsg]);
+      const { data: assistantMsg, error: assistantError } =
+        await supabase
+          .from("messages")
+          .insert({
+            chat_id: currentChatId,
+            role: "assistant",
+            content: assistantContent,
+            model: selectedModel,
+          })
+          .select()
+          .single();
+  
+  
+      if (assistantError) throw assistantError;
+  
+  
+      setMessages((prev) => [
+        ...prev,
+        assistantMsg,
+      ]);
+  
       msgCount += 1;
-
-      // Update chat metadata
-      await base44.entities.Chat.update(currentChatId, {
-        last_message_at: new Date().toISOString(),
-        message_count: msgCount,
-      });
-
-      // Track usage
-      trackUsage("ai_message", 1, { model: selectedModel });
-      base44.analytics.track({ eventName: "chat_message_sent", properties: { model: selectedModel } });
-
+  
+  
+      // Update chat
+      await supabase
+        .from("chats")
+        .update({
+          last_message_at:
+            new Date().toISOString(),
+  
+          message_count: msgCount,
+        })
+        .eq("id", currentChatId);
+  
+  
+      trackUsage(
+        "ai_message",
+        1,
+        {
+          model: selectedModel,
+        }
+      );
+  
+  
       loadChats();
+  
+  
     } catch (err) {
-      console.error("Failed to send message:", err);
-      const errorMsg = await base44.entities.Message.create({
-        chat_id: currentChatId,
-        role: "assistant",
-        content: `⚠️ Error: ${err.message || "Failed to get AI response. Please try again."}`,
-      });
-      setMessages((prev) => [...prev, errorMsg]);
+  
+      console.error(
+        "Failed to send message:",
+        err
+      );
+  
+  
+      if (currentChatId) {
+  
+        const { data: errorMsg } =
+          await supabase
+            .from("messages")
+            .insert({
+              chat_id: currentChatId,
+              role: "assistant",
+              content:
+                `⚠️ Error: ${
+                  err.message ||
+                  "Failed to get AI response"
+                }`,
+            })
+            .select()
+            .single();
+  
+  
+        setMessages((prev) => [
+          ...prev,
+          errorMsg,
+        ]);
+      }
+  
     } finally {
+  
       setPhase("idle");
       setStreamingContent("");
+  
       if (streamIntervalRef.current) {
-        clearInterval(streamIntervalRef.current);
+        clearInterval(
+          streamIntervalRef.current
+        );
+  
         streamIntervalRef.current = null;
       }
     }
@@ -287,9 +447,19 @@ export default function ChatPage() {
 
   const handleDeleteMessage = async (id) => {
     if (!confirm("Delete this response?")) return;
+  
     try {
-      await base44.entities.Message.delete(id);
-      setMessages((prev) => prev.filter((m) => m.id !== id));
+      const { error } = await supabase
+        .from("messages")
+        .delete()
+        .eq("id", id);
+  
+      if (error) throw error;
+  
+      setMessages((prev) =>
+        prev.filter((m) => m.id !== id)
+      );
+  
     } catch (err) {
       console.error("Failed to delete message:", err);
     }
@@ -297,61 +467,229 @@ export default function ChatPage() {
 
   const handleRegenerate = async (msg) => {
     if (phase !== "idle") return;
-    const msgIndex = messages.findIndex((m) => m.id === msg.id);
+  
+    const msgIndex = messages.findIndex(
+      (m) => m.id === msg.id
+    );
+  
     if (msgIndex === -1) return;
+  
     const contextMessages = messages.slice(0, msgIndex);
+  
     setPhase("thinking");
+  
     try {
       const contextStr = contextMessages
-        .map((m) => (m.role === "user" ? `User: ${m.content}` : m.role === "assistant" ? `Assistant: ${m.content}` : ""))
+        .map((m) =>
+          m.role === "user"
+            ? `User: ${m.content}`
+            : m.role === "assistant"
+            ? `Assistant: ${m.content}`
+            : ""
+        )
         .filter(Boolean)
         .join("\n\n");
-      const fullPrompt = `${SYSTEM_PROMPT}\n\nConversation history:\n${contextStr}\n\nPlease respond to the user's latest message.`;
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: fullPrompt,
-        model: selectedModel === "automatic" ? undefined : selectedModel,
+  
+  
+      const fullPrompt = `${SYSTEM_PROMPT}
+  
+  Conversation history:
+  ${contextStr}
+  
+  Please respond to the user's latest message.`;
+  
+  
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: fullPrompt,
+          model:
+            selectedModel === "automatic"
+              ? undefined
+              : selectedModel,
+        }),
       });
-      const assistantContent = typeof response === "string" ? response : JSON.stringify(response);
+  
+  
+      if (!response.ok) {
+        throw new Error("AI request failed");
+      }
+  
+  
+      const result = await response.json();
+  
+      const assistantContent =
+        typeof result === "string"
+          ? result
+          : result.message || result.content;
+  
+  
       await new Promise((resolve) => {
-        startStreaming(assistantContent, () => resolve());
+        startStreaming(
+          assistantContent,
+          () => resolve()
+        );
       });
-      await base44.entities.Message.update(msg.id, { content: assistantContent });
-      setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, content: assistantContent } : m)));
-      trackUsage("ai_message", 1, { model: selectedModel });
+  
+  
+      const { error } = await supabase
+        .from("messages")
+        .update({
+          content: assistantContent,
+        })
+        .eq("id", msg.id);
+  
+  
+      if (error) throw error;
+  
+  
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === msg.id
+            ? {
+                ...m,
+                content: assistantContent,
+              }
+            : m
+        )
+      );
+  
+  
+      trackUsage(
+        "ai_message",
+        1,
+        {
+          model: selectedModel,
+        }
+      );
+  
+  
     } catch (err) {
-      console.error("Failed to regenerate:", err);
+      console.error(
+        "Failed to regenerate:",
+        err
+      );
+  
     } finally {
+  
       setPhase("idle");
       setStreamingContent("");
+  
     }
   };
 
   const handleContinue = async (msg) => {
     if (phase !== "idle") return;
+  
     setPhase("thinking");
+  
     try {
       const contextStr = messages
-        .map((m) => (m.role === "user" ? `User: ${m.content}` : m.role === "assistant" ? `Assistant: ${m.content}` : ""))
+        .map((m) =>
+          m.role === "user"
+            ? `User: ${m.content}`
+            : m.role === "assistant"
+            ? `Assistant: ${m.content}`
+            : ""
+        )
         .filter(Boolean)
         .join("\n\n");
-      const fullPrompt = `${SYSTEM_PROMPT}\n\nConversation so far:\n${contextStr}\n\nPlease continue the assistant's last response from where it left off. Do not repeat what was already said.`;
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: fullPrompt,
-        model: selectedModel === "automatic" ? undefined : selectedModel,
+  
+  
+      const fullPrompt = `${SYSTEM_PROMPT}
+  
+  Conversation so far:
+  ${contextStr}
+  
+  Please continue the assistant's last response from where it left off. Do not repeat what was already said.`;
+  
+  
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: fullPrompt,
+          model:
+            selectedModel === "automatic"
+              ? undefined
+              : selectedModel,
+        }),
       });
-      const continuation = typeof response === "string" ? response : JSON.stringify(response);
-      const newContent = msg.content + "\n\n" + continuation;
+  
+  
+      if (!response.ok) {
+        throw new Error("AI request failed");
+      }
+  
+  
+      const result = await response.json();
+  
+      const continuation =
+        typeof result === "string"
+          ? result
+          : result.message || result.content;
+  
+  
+      const newContent =
+        msg.content + "\n\n" + continuation;
+  
+  
       await new Promise((resolve) => {
-        startStreaming(continuation, () => resolve());
+        startStreaming(
+          continuation,
+          () => resolve()
+        );
       });
-      await base44.entities.Message.update(msg.id, { content: newContent });
-      setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, content: newContent } : m)));
-      trackUsage("ai_message", 1, { model: selectedModel });
+  
+  
+      const { error } = await supabase
+        .from("messages")
+        .update({
+          content: newContent,
+        })
+        .eq("id", msg.id);
+  
+  
+      if (error) throw error;
+  
+  
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === msg.id
+            ? {
+                ...m,
+                content: newContent,
+              }
+            : m
+        )
+      );
+  
+  
+      trackUsage(
+        "ai_message",
+        1,
+        {
+          model: selectedModel,
+        }
+      );
+  
+  
     } catch (err) {
-      console.error("Failed to continue:", err);
+      console.error(
+        "Failed to continue:",
+        err
+      );
+  
     } finally {
+  
       setPhase("idle");
       setStreamingContent("");
+  
     }
   };
 
