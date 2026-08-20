@@ -17,7 +17,7 @@ export const NAV_LINKS = [
 ];
 
 export const SOCIAL_LINKS = {
-  github: "https://github.com/hackerai",
+  github: "https://github.com/itssourov13/hackergf-ai",
   twitter: "https://twitter.com/hackerai",
   discord: "https://discord.gg/hackerai",
 };
