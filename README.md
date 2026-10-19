@@ -249,23 +249,31 @@ npm install
 
 ## Environment Variables
 
-The project uses Vite environment variables (prefixed with `VITE_`). These are managed by the Base44 platform but can be overridden locally:
+The production canonical URL is `https://hackergf.devs.surf/`; `https://hackergf-ai.vercel.app/` remains an alternate Vercel alias. Both domains need to be allowed in Supabase Auth redirect settings if you intend to sign in from both.
 
-| Variable | Description | Required |
+Copy `.env.example` to `.env.local` for local development. On Vercel, configure the variables below under **Project → Settings → Environment Variables**. Redeploy after changing build-time variables.
+
+| Variable | Purpose | Required |
 |---|---|---|
-| `VITE_BASE44_APP_ID` | Your Base44 application ID | Yes |
-| `VITE_BASE44_FUNCTIONS_VERSION` | Base44 functions version | No |
-| `VITE_BASE44_APP_BASE_URL` | Base44 app base URL | No |
+| `VITE_BASE44_APP_ID` | Base44 application ID for Base44-backed data/integrations | Yes for Base44 features |
+| `VITE_BASE44_FUNCTIONS_VERSION` | Optional Base44 functions version | No |
+| `VITE_BASE44_APP_BASE_URL` | Optional Base44 app base URL | No |
+| `VITE_SUPABASE_URL` | Public Supabase project URL override | Optional; current project fallback exists |
+| `VITE_SUPABASE_ANON_KEY` | Public Supabase publishable/anon key override | Optional; current project fallback exists |
+| `SUPABASE_URL` | Server-side Supabase URL for chat session verification | Optional override |
+| `SUPABASE_ANON_KEY` | Server-side Supabase publishable/anon key for session verification | Optional override; never use a service-role key here |
+| `OPENROUTER_API_KEY` | Secret key used only by `/api/chat` | **Required for AI chat** |
+| `PUBLIC_APP_URL` | URL sent to OpenRouter for attribution | Optional; defaults to the canonical domain |
+| `UPSTASH_REDIS_REST_URL` | Upstash REST endpoint for shared rate limiting and Free monthly quota | Required in Vercel Production |
+| `UPSTASH_REDIS_REST_TOKEN` | Server-only Upstash REST bearer token | Required in Vercel Production |
 
-Create a `.env.local` file in the project root:
+`VITE_*` variables are baked into the browser bundle and must never contain privileged secrets. `OPENROUTER_API_KEY` must not use a `VITE_` prefix. The Supabase publishable/anon key is designed for browser use; protect data with Supabase Row Level Security policies. Never place a Supabase `service_role` key in this repository or in a `VITE_*` variable.
 
-```env
-VITE_BASE44_APP_ID=your_app_id_here
-VITE_BASE44_FUNCTIONS_VERSION=
-VITE_BASE44_APP_BASE_URL=
-```
+### Supabase Auth redirect configuration
 
-> **Note**: When running on the Base44 platform, these values are injected automatically. They are only needed for local development against a custom Base44 backend.
+In Supabase Dashboard → Authentication → URL Configuration, set Site URL to https://hackergf.devs.surf. Add https://hackergf.devs.surf/** and (while keeping the Vercel alias) https://hackergf-ai.vercel.app/** to Redirect URLs. Use http://localhost:5173/** only for local development. These dashboard settings must be configured outside the repository.
+
+The serverless chat endpoint verifies Supabase sessions, validates model IDs and prompt size, requires trusted Supabase app_metadata claims for premium models, and enforces a shared per-user rate limit plus the Free plan’s 50-message monthly quota through Upstash in Vercel Production. Set both UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN in Vercel Production or the AI endpoint fails closed. Local development without these values uses an in-memory burst limit only. Base44 subscriptions do not automatically sync to Supabase Auth metadata and this repo has no verified checkout/webhook; premium models therefore stay locked and paid plan changes are disabled until a trusted billing integration publishes those claims. Configure provider spending limits before significant public traffic.
 
 Additionally, the app extracts runtime parameters from the URL and `localStorage` (see `src/lib/app-params.js`):
 - `app_id` — Base44 app ID
@@ -307,7 +315,10 @@ npm run typecheck
 # Lint (optional)
 npm run lint
 
-# Production build
+# Full local quality gate (typecheck + lint + API tests + production build)
+npm run check
+
+# Production build only
 npm run build
 ```
 
@@ -486,8 +497,7 @@ npm i -g vercel
 vercel
 ```
 
-Set environment variables in the Vercel dashboard:
-- `VITE_BASE44_APP_ID`
+Set environment variables in the Vercel dashboard: `VITE_BASE44_APP_ID` (Base44 feature dependency) and `OPENROUTER_API_KEY` (server-only; required for AI chat). See the Environment Variables table above for Supabase overrides.
 
 ### Other Platforms
 
@@ -503,7 +513,7 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions for:
 
 ### App shows a blank white screen
 - Check browser console for JavaScript errors
-- Verify `VITE_BASE44_APP_ID` is set in `.env.local`
+- Verify `VITE_BASE44_APP_ID` is set in `.env.local` if Base44-backed pages are used; check the browser console for Base44 SDK configuration errors.
 - Ensure all imports resolve correctly (check for typos in `@/` alias paths)
 - Run `npm run build` to check for build errors
 

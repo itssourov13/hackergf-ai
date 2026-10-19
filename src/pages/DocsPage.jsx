@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card-custom";
+import { Card } from "@/components/ui/card-custom";
 import { Badge } from "@/components/ui/badge-custom";
 import { BookOpen, ChevronDown, ChevronRight, MessageSquare, Code2, Upload, Key, CreditCard, Rocket } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const GUIDES = [
   {

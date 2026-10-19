@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Container } from "@/components/ui/container";
-import { Terminal, Github, Twitter, MessageCircle } from "lucide-react";
+import { Terminal, Github } from "lucide-react";
 import { APP_CONFIG, NAV_LINKS, SOCIAL_LINKS } from "@/lib/config/constants";
 
 export default function Footer() {
@@ -23,14 +23,8 @@ export default function Footer() {
                 {APP_CONFIG.description}
               </p>
               <div className="flex items-center gap-4 mt-6">
-                <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-400 transition-colors">
+                <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" aria-label="Hacker gf source code on GitHub" className="text-zinc-500 hover:text-red-400 transition-colors">
                   <Github className="w-5 h-5" />
-                </a>
-                <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-400 transition-colors">
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a href={SOCIAL_LINKS.discord} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-400 transition-colors">
-                  <MessageCircle className="w-5 h-5" />
                 </a>
               </div>
             </div>

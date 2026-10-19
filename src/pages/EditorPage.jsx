@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button-custom";
 import { Card, CardContent } from "@/components/ui/card-custom";
-import { Plus, FileCode, Trash2, Save, FilePlus, Loader2, Terminal, Play, X, LayoutDashboard, FolderPlus, ChevronDown, Edit2 } from "lucide-react";
+import { FileCode, Trash2, Save, FilePlus, Loader2, Terminal, Play, X, LayoutDashboard, FolderPlus, ChevronDown, Edit2 } from "lucide-react";
 import { trackUsage } from "@/lib/usage";
 import { cn } from "@/lib/utils";
 

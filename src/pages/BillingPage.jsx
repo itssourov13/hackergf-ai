@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card-custom";
 import { Button } from "@/components/ui/button-custom";
 import { Badge } from "@/components/ui/badge-custom";
@@ -8,7 +8,7 @@ import { PLAN_LIST, getPlan } from "@/lib/config/plans";
 import { getUserUsage } from "@/lib/usage";
 
 export default function BillingPage() {
-  const [subscription, setSubscription] = useState(null);
+  const { user } = useAuth();
   const [usage, setUsage] = useState({});
   const [loading, setLoading] = useState(true);
   const [billingCycle, setBillingCycle] = useState("monthly");
@@ -19,47 +19,12 @@ export default function BillingPage() {
 
   const loadData = async () => {
     try {
-      const [subs, usageData] = await Promise.all([
-        base44.entities.Subscription.list("-created_date", 1),
-        getUserUsage(),
-      ]);
-      if (subs.length > 0) {
-        setSubscription(subs[0]);
-        setBillingCycle(subs[0].billing_cycle || "monthly");
-      }
+      const usageData = await getUserUsage();
       setUsage(usageData);
     } catch (err) {
       console.error("Failed to load billing data:", err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSelectPlan = async (planId) => {
-    if (planId === "free" || planId === "enterprise") return;
-    try {
-      if (subscription) {
-        const updated = await base44.entities.Subscription.update(subscription.id, {
-          plan: planId,
-          status: "active",
-          billing_cycle: billingCycle,
-          current_period_start: new Date().toISOString(),
-          current_period_end: new Date(Date.now() + (billingCycle === "yearly" ? 365 : 30) * 24 * 60 * 60 * 1000).toISOString(),
-        });
-        setSubscription(updated);
-      } else {
-        const created = await base44.entities.Subscription.create({
-          plan: planId,
-          status: "active",
-          billing_cycle: billingCycle,
-          current_period_start: new Date().toISOString(),
-          current_period_end: new Date(Date.now() + (billingCycle === "yearly" ? 365 : 30) * 24 * 60 * 60 * 1000).toISOString(),
-        });
-        setSubscription(created);
-      }
-    } catch (err) {
-      console.error("Failed to update subscription:", err);
-      alert("Failed to update subscription. Please try again.");
     }
   };
 
@@ -71,7 +36,17 @@ export default function BillingPage() {
     );
   }
 
-  const currentPlan = getPlan(subscription?.plan);
+  // Display only the plan claim issued by a trusted server-side billing/admin workflow.
+  // Base44 subscription records are not a source of authorization for this Supabase-auth app.
+  const appMetadata = user?.app_metadata || {};
+  const claimedPlan = typeof appMetadata.plan === "string" ? appMetadata.plan.toLowerCase() : "free";
+  const claimedStatus = typeof appMetadata.subscription_status === "string"
+    ? appMetadata.subscription_status.toLowerCase()
+    : "inactive";
+  const hasVerifiedPaidPlan =
+    ["pro", "team", "enterprise"].includes(claimedPlan) &&
+    ["active", "trialing"].includes(claimedStatus);
+  const currentPlan = getPlan(hasVerifiedPaidPlan ? claimedPlan : "free");
 
   const usageItems = [
     { label: "AI Messages", used: usage.ai_messages || 0, limit: currentPlan.limits.aiMessagesPerMonth },
@@ -100,7 +75,7 @@ export default function BillingPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-2xl font-bold text-white">{currentPlan.name}</span>
-                <Badge variant="default" className="uppercase">{subscription?.status || "active"}</Badge>
+                <Badge variant="default" className="uppercase">{hasVerifiedPaidPlan ? claimedStatus : "free"}</Badge>
               </div>
               <p className="text-sm text-zinc-400">{currentPlan.description}</p>
             </div>
@@ -155,10 +130,14 @@ export default function BillingPage() {
         </button>
       </div>
 
+      <div role="status" className="mb-6 rounded-lg border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-amber-200">
+        Paid plan checkout is not configured yet. Plan changes are disabled until a verified payment flow is connected; this page will not mark a subscription active without payment confirmation.
+      </div>
+
       {/* Available Plans */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {PLAN_LIST.filter((p) => p.id !== "enterprise").map((plan) => {
-          const isCurrent = subscription?.plan === plan.id;
+          const isCurrent = currentPlan.id === plan.id;
           return (
             <Card
               key={plan.id}
@@ -189,13 +168,13 @@ export default function BillingPage() {
                 <Button
                   variant={isCurrent ? "outline" : plan.highlighted ? "default" : "outline"}
                   className="w-full mb-6"
-                  disabled={isCurrent}
-                  onClick={() => handleSelectPlan(plan.id)}
+                  disabled={!isCurrent}
+                  title={!isCurrent ? "Secure checkout is not configured" : undefined}
                 >
                   {isCurrent ? (
                     <><Check className="w-4 h-4" /> Current Plan</>
                   ) : (
-                    "Choose " + plan.name
+                    "Checkout unavailable"
                   )}
                 </Button>
                 <ul className="space-y-3">

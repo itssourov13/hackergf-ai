@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
-import { base44 } from "@/api/base44Client";
 import { Terminal, LayoutDashboard, MessageSquare, Code2, Upload, Settings, LogOut, Menu, X, CreditCard, Shield, BarChart3, KeyRound, FolderGit2, LifeBuoy, BookOpen, Activity, Keyboard, Gauge, Cpu, ShieldAlert, Command, ClipboardList, FileCode, Map, MessageCircle, Sparkles, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 

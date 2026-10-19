@@ -1,65 +1,33 @@
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
-import OpenAI from "openai";
+import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
+import chatHandler from "../api/chat.js";
 
-dotenv.config();
+dotenv.config({ path: process.env.ENV_FILE || resolve(fileURLToPath(new URL("..", import.meta.url)), ".env.local") });
 
 const app = express();
+const port = Number(process.env.PORT || 5000);
 
-app.use(cors());
-app.use(express.json());
+app.disable("x-powered-by");
+app.use(express.json({ limit: "128kb" }));
 
-
-const client = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY,
-  baseURL: "https://openrouter.ai/api/v1",
+app.get("/api/healthz", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.status(200).json({ status: "ok" });
+});
+app.all("/api/healthz", (_req, res) => {
+  res.setHeader("Allow", "GET");
+  res.setHeader("Cache-Control", "no-store");
+  res.status(405).json({ error: "Method not allowed" });
 });
 
-
-app.post("/api/chat", async (req, res) => {
-
-  try {
-
-    const { prompt, model } = req.body;
-
-
-    const response = await client.chat.completions.create({
-
-      model: model || "openai/gpt-4o-mini",
-
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-
-    });
-
-
-    const message =
-      response.choices[0].message.content;
-
-
-    res.json({
-      message,
-    });
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    res.status(500).json({
-      error: error.message,
-    });
-
-  }
-
+app.post("/api/chat", chatHandler);
+app.all("/api/chat", (_req, res) => {
+  res.setHeader("Allow", "POST");
+  res.status(405).json({ error: "Method not allowed" });
 });
 
-
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+app.listen(port, () => {
+  console.log(`Hacker gf API listening on port ${port}`);
 });

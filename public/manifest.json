@@ -1,7 +1,7 @@
 {
-  "name": "HackerAI",
-  "short_name": "HackerAI",
-  "description": "AI-Powered Development Platform",
+  "name": "Hacker gf \u2014 AI-Powered Development Platform",
+  "short_name": "Hacker gf",
+  "description": "AI-powered development platform for chatting with AI, writing code, and managing developer projects.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

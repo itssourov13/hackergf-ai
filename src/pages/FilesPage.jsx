@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card-custom";
-import { Button } from "@/components/ui/button-custom";
 import { Badge } from "@/components/ui/badge-custom";
 import { Upload, FileText, Trash2, Search, Loader2, FileCode, Archive, Braces, FileSpreadsheet, Image as ImageIcon, Download } from "lucide-react";
-import { UPLOAD_LIMITS, getFileCategory, getMaxSizeForFile, ACCEPTED_EXTENSIONS, GLOBAL_LIMITS } from "@/lib/config/uploadLimits";
+import { getFileCategory, getMaxSizeForFile, ACCEPTED_EXTENSIONS, GLOBAL_LIMITS } from "@/lib/config/uploadLimits";
 import { trackUsage } from "@/lib/usage";
 import { cn } from "@/lib/utils";
 
