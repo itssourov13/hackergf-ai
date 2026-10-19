@@ -172,4 +172,4 @@ Do not paste API keys, auth tokens, service-role keys, or full environment dumps
 | server/server.js | Local Express API server |
 | vercel.json | SPA rewrites, function limits, response headers |
 | .env.example | Safe environment-variable template |
-| DEPLOYMENT.md | Platform-specific deployment guide |
+| docs/DEPLOYMENT.md | Platform-specific deployment guide |

@@ -42,7 +42,7 @@ test("Vercel config preserves API functions and enables client-side route fallba
 
 test("deployment docs explicitly require both Upstash variables in Production", async () => {
   const readme = await read("./README.md");
-  const deploy = await read("./DEPLOYMENT.md");
+  const deploy = await read("./docs/DEPLOYMENT.md");
   for (const content of [readme, deploy]) {
     assert.match(content, /UPSTASH_REDIS_REST_URL/);
     assert.match(content, /UPSTASH_REDIS_REST_TOKEN/);

@@ -32,7 +32,7 @@ Start from .env.example. The main deployment variables are:
 - **PUBLIC_APP_URL** — optional; defaults to the canonical domain.
 - **VITE_SUPABASE_URL**, **VITE_SUPABASE_ANON_KEY**, **SUPABASE_URL**, **SUPABASE_ANON_KEY** — optional overrides if moving away from the existing Supabase project.
 
-Never put privileged values in VITE_* variables. Keep OpenRouter and Upstash credentials server-side; never use a Supabase service-role key as the anon/publishable key. See [HANDOFF.md](./HANDOFF.md) for the environment matrix, auth settings, security behavior, and outstanding production work.
+Never put privileged values in VITE_* variables. Keep OpenRouter and Upstash credentials server-side; never use a Supabase service-role key as the anon/publishable key. See [HANDOFF.md](./docs/HANDOFF.md) for the environment matrix, auth settings, security behavior, and outstanding production work.
 
 ## Commands
 
@@ -54,19 +54,19 @@ Never put privileged values in VITE_* variables. Keep OpenRouter and Upstash cre
 
 ## Deployment and handoff
 
-Read [DEPLOYMENT.md](./DEPLOYMENT.md) for platform-specific deployment instructions and [HANDOFF.md](./HANDOFF.md) before changing production configuration.
+Read [DEPLOYMENT.md](./docs/DEPLOYMENT.md) for platform-specific deployment instructions and [HANDOFF.md](./docs/HANDOFF.md) before changing production configuration.
 
 Important current limitations:
 - Vercel AI chat fails closed until both Upstash REST variables and OPENROUTER_API_KEY are configured.
 - Free users are limited to 50 AI messages per UTC calendar month plus 15 requests per user per minute when Upstash is enabled.
 - Paid checkout/webhooks are not implemented. Billing upgrades are disabled, and premium models require trusted Supabase app_metadata claims written by a server-side billing/admin workflow.
-- A previous production-only dependency audit passed. A full audit of development/build dependencies has known high-severity advisories in the Tailwind CSS v3 dependency chain; see HANDOFF.md before attempting a major CSS migration.
+- A previous production-only dependency audit passed. A full audit of development/build dependencies has known high-severity advisories in the Tailwind CSS v3 dependency chain; see docs/HANDOFF.md before attempting a major CSS migration.
 
 ## Project documents
 
-- [HANDOFF.md](./HANDOFF.md) — current implementation, deployment prerequisites, verification, known gaps, and next steps.
-- [DEPLOYMENT.md](./DEPLOYMENT.md) — deployment guide.
-- [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) — developer workflow and conventions.
-- [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) — folder map.
-- [PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md) — wider project reference.
+- [HANDOFF.md](./docs/HANDOFF.md) — current implementation, deployment prerequisites, verification, known gaps, and next steps.
+- [DEPLOYMENT.md](./docs/DEPLOYMENT.md) — deployment guide.
+- [DEVELOPER_GUIDE.md](./docs/DEVELOPER_GUIDE.md) — developer workflow and conventions.
+- [PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md) — folder map.
+- [PROJECT_DOCUMENTATION.md](./docs/PROJECT_DOCUMENTATION.md) — wider project reference.
 - [.env.example](./.env.example) — variable names and safe placeholders only.
