@@ -1,6 +1,5 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card-custom";
-import { Badge } from "@/components/ui/badge-custom";
 import { Keyboard, Code2, Terminal, MessageSquare, Globe } from "lucide-react";
 
 const SECTIONS = [

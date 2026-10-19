@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card-custom";
-import { Badge } from "@/components/ui/badge-custom";
 import { BarChart3, MessageSquare, Coins, Upload, Code2, TrendingUp } from "lucide-react";
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,

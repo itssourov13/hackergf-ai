@@ -3,8 +3,7 @@ export const APP_CONFIG = {
   tagline: "AI-Powered Development Platform",
   description:
     "A production-ready AI SaaS platform for developers. Chat with AI, write code, execute programs, and manage files — all in one hacker-themed interface.",
-  url: "https://hackerai.app",
-  supportEmail: "support@hackerai.app",
+  url: "https://hackergf.devs.surf",
   version: "1.0.0",
 };
 
@@ -16,10 +15,9 @@ export const NAV_LINKS = [
   { label: "FAQ", href: "/#faq" },
 ];
 
+// Only links verified to point to a real, project-owned destination are listed here.
 export const SOCIAL_LINKS = {
   github: "https://github.com/itssourov13/hackergf-ai",
-  twitter: "https://twitter.com/hackerai",
-  discord: "https://discord.gg/hackerai",
 };
 
 export const FAQ_ITEMS = [

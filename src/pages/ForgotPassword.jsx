@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,17 +11,21 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await base44.auth.resetPasswordRequest(email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setSent(true);
     } catch {
-      // Always show success regardless
+      setError("We couldn't start the reset process. Please check your connection and try again.");
     } finally {
       setLoading(false);
-      setSent(true);
     }
   };
 
@@ -41,6 +45,12 @@ export default function ForgotPassword() {
           If an account exists with that email, you'll receive a password reset link shortly.
         </p>
       ) : (
+        <>
+        {error && (
+          <div role="alert" className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email address</Label>
@@ -70,6 +80,7 @@ export default function ForgotPassword() {
             )}
           </Button>
         </form>
+        </>
       )}
     </AuthLayout>
   );

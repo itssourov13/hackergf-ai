@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button-custom";
 import { Terminal, Menu, X, LayoutDashboard } from "lucide-react";
-import { APP_CONFIG, NAV_LINKS } from "@/lib/config/constants";
+import { NAV_LINKS } from "@/lib/config/constants";
 import { cn } from "@/lib/utils";
 
 export default function Navbar() {

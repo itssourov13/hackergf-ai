@@ -197,13 +197,15 @@ hacker-gf/
 ├── eslint.config.js                           # ESLint configuration
 ├── components.json                            # shadcn/ui configuration
 ├── .gitignore                                 # Git ignore rules
-├── AGENTS.md                                  # AI agent instructions
-├── CLAUDE.md                                  # Claude AI instructions
-├── README.md                                  # Project README
-├── PROJECT_DOCUMENTATION.md                   # Technical documentation
-├── DEVELOPER_GUIDE.md                         # Developer guide
-├── DEPLOYMENT.md                              # Deployment guide
-└── PROJECT_STRUCTURE.md                       # This file
+├── AGENTS.md                                  # AI agent instructions (keep at root)
+├── CLAUDE.md                                  # Claude agent instructions (keep at root)
+├── README.md                                  # Project overview and quick start
+└── docs/                                      # Project documentation
+    ├── HANDOFF.md                             # Current engineering handoff
+    ├── DEPLOYMENT.md                          # Deployment guide
+    ├── DEVELOPER_GUIDE.md                     # Developer guide
+    ├── PROJECT_DOCUMENTATION.md               # Technical documentation
+    └── PROJECT_STRUCTURE.md                   # This file
 ```
 
 ---

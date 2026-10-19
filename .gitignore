@@ -28,5 +28,6 @@ dist-ssr
 *.sw?
 
 .env
+!.env.example
 .vite
 base44/.app.jsonc

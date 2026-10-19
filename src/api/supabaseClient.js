@@ -1,6 +1,2 @@
-import { createClient } from "@supabase/supabase-js";
-
-export const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+// Compatibility re-export: keep a single Supabase client/session across the app.
+export { supabase } from "@/lib/supabase";

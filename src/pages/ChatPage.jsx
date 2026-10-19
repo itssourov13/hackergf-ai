@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/AuthContext";
 import { SYSTEM_PROMPT, AI_MODELS, DEFAULT_MODEL } from "@/lib/config/aiProviders";
 import { trackUsage } from "@/lib/usage";
 import { Menu, ChevronDown, Loader2 } from "lucide-react";
@@ -16,6 +17,16 @@ import ThinkingIndicator from "@/components/chat/ThinkingIndicator";
 export default function ChatPage() {
   const { chatId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const appMetadata = user?.app_metadata || {};
+  const userPlan = typeof appMetadata.plan === "string" ? appMetadata.plan.toLowerCase() : "free";
+  const subscriptionStatus = typeof appMetadata.subscription_status === "string"
+    ? appMetadata.subscription_status.toLowerCase()
+    : "";
+  const hasPremiumModelAccess = appMetadata.role === "admin" || (
+    ["pro", "team", "enterprise"].includes(userPlan) &&
+    ["active", "trialing"].includes(subscriptionStatus)
+  );
 
   const [chats, setChats] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -274,10 +285,16 @@ export default function ChatPage() {
   
   
       // AI API call
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error("Your session has expired. Please sign in again.");
+      }
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           prompt: fullPrompt,
@@ -499,10 +516,16 @@ export default function ChatPage() {
   Please respond to the user's latest message.`;
   
   
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error("Your session has expired. Please sign in again.");
+      }
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           prompt: fullPrompt,
@@ -607,10 +630,16 @@ export default function ChatPage() {
   Please continue the assistant's last response from where it left off. Do not repeat what was already said.`;
   
   
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error("Your session has expired. Please sign in again.");
+      }
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           prompt: fullPrompt,
@@ -773,27 +802,34 @@ export default function ChatPage() {
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setModelDropdown(false)} />
                 <div className="absolute right-0 top-full mt-1 w-64 rounded-xl border border-zinc-800 bg-zinc-900 shadow-2xl z-20 max-h-96 overflow-y-auto">
-                  {Object.values(AI_MODELS).map((model) => (
-                    <button
-                      key={model.id}
-                      onClick={() => {
-                        setSelectedModel(model.id);
-                        setModelDropdown(false);
-                      }}
-                      className={cn(
-                        "w-full px-3 py-2.5 text-left hover:bg-zinc-800 transition-colors border-b border-zinc-800/50 last:border-0",
-                        selectedModel === model.id && "bg-red-600/10"
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-white">{model.name}</span>
-                        {model.premium && (
-                          <span className="text-[10px] text-yellow-500 font-medium">PRO</span>
+                  {Object.values(AI_MODELS).map((model) => {
+                    const locked = model.premium && !hasPremiumModelAccess;
+                    return (
+                      <button
+                        key={model.id}
+                        type="button"
+                        disabled={locked}
+                        title={locked ? "Requires an active Pro, Team, or Enterprise entitlement" : undefined}
+                        onClick={() => {
+                          if (locked) return;
+                          setSelectedModel(model.id);
+                          setModelDropdown(false);
+                        }}
+                        className={cn(
+                          "w-full px-3 py-2.5 text-left hover:bg-zinc-800 transition-colors border-b border-zinc-800/50 last:border-0 disabled:cursor-not-allowed disabled:opacity-50",
+                          selectedModel === model.id && "bg-red-600/10"
                         )}
-                      </div>
-                      <p className="text-xs text-zinc-500 mt-0.5">{model.description}</p>
-                    </button>
-                  ))}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-white">{model.name}</span>
+                          {model.premium && (
+                            <span className="text-[10px] text-yellow-500 font-medium">PRO</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-zinc-500 mt-0.5">{locked ? "Requires an active paid subscription" : model.description}</p>
+                      </button>
+                    );
+                  })}
                 </div>
               </>
             )}

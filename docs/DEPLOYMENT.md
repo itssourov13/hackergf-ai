@@ -246,43 +246,51 @@ This serves the `./dist/` folder on a local server (typically `http://localhost:
 
 ## 6. Environment Variables
 
-### Required Variables
+Copy `.env.example` to `.env.local` for local development. Never commit `.env.local` or real credentials.
 
-| Variable | Description | Required |
+| Variable | Purpose | Required |
 |---|---|---|
-| `VITE_BASE44_APP_ID` | Your Base44 application ID | **Yes** |
-| `VITE_BASE44_FUNCTIONS_VERSION` | Base44 functions version | No |
-| `VITE_BASE44_APP_BASE_URL` | Base44 app base URL | No |
+| `VITE_BASE44_APP_ID` | Base44 app ID used by Base44-backed pages and integrations | Required for Base44 features |
+| `VITE_BASE44_FUNCTIONS_VERSION` | Base44 functions version override | Optional |
+| `VITE_BASE44_APP_BASE_URL` | Base44 app base URL override | Optional |
+| `VITE_SUPABASE_URL` | Browser Supabase project URL override | Optional; existing public-project fallback is retained |
+| `VITE_SUPABASE_ANON_KEY` | Browser Supabase publishable/anon key override | Optional; existing publishable-key fallback is retained |
+| `SUPABASE_URL` | Server-only URL used to validate chat sessions | Optional override |
+| `SUPABASE_ANON_KEY` | Server-only publishable/anon key used for auth validation | Optional override; do not use a service-role key |
+| `OPENROUTER_API_KEY` | Server-only OpenRouter credential | Required for AI chat |
+| `PUBLIC_APP_URL` | Public app URL used for OpenRouter attribution | Optional; defaults to `https://hackergf.devs.surf` |
+| `UPSTASH_REDIS_REST_URL` | Upstash REST endpoint for shared rate limiting and Free monthly quota | Required in Vercel Production |
+| `UPSTASH_REDIS_REST_TOKEN` | Server-only Upstash REST bearer token | Required in Vercel Production |
 
-### Local Development
+Variables beginning with `VITE_` are compiled into browser JavaScript and must never hold service-role keys, API secrets, or other privileged credentials. `OPENROUTER_API_KEY` must remain server-side (no `VITE_` prefix). Supabase publishable/anon keys are intended for browser use, but all exposed tables still require correct Row Level Security policies.
 
-Create a `.env.local` file in the project root:
+### Vercel production settings
 
-```env
-VITE_BASE44_APP_ID=your_app_id_here
-VITE_BASE44_FUNCTIONS_VERSION=
-VITE_BASE44_APP_BASE_URL=
-```
+1. Set **Framework Preset** to Vite, **Build Command** to `npm run build`, and **Output Directory** to `dist`.
+2. Add `VITE_BASE44_APP_ID` from the Base44 application settings if Base44-backed features are required.
+3. Add `OPENROUTER_API_KEY` as a sensitive server-side environment variable for Production (and Preview only if preview chat should work).
+4. Create an Upstash Redis database and add UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to Vercel Production. These are required; chat intentionally returns 503 without a shared limiter in Production. Keep the token sensitive and do not prefix it with VITE_.
+5. If switching/overriding Supabase projects, set `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_URL`, and `SUPABASE_ANON_KEY` consistently. The current public project defaults are retained so omitting these overrides does not break the existing Supabase project.
+6. Set `PUBLIC_APP_URL=https://hackergf.devs.surf` if you need to override the OpenRouter attribution URL.
+7. Redeploy after changing any environment variable. Vite variables are build-time values.
 
-> **Important**: Never commit `.env.local` to Git. It's in `.gitignore`.
+### Supabase Auth domains
 
-### Production Deployment
+Set the Supabase Auth **Site URL** to `https://hackergf.devs.surf`. Add these Redirect URLs:
 
-Set environment variables on your hosting platform (see platform-specific instructions below).
+- `https://hackergf.devs.surf/**`
+- `https://hackergf-ai.vercel.app/**` (only while retaining the default Vercel alias for auth)
+- `http://localhost:5173/**` (local development only)
 
-### How Variables Are Used
+The Google OAuth provider's callback URI is configured at the Supabase/provider level; do not replace it with the site URL. OAuth callbacks should return to Supabase first and then use the registered application redirect URL.
 
-The app reads environment variables via `src/lib/app-params.js`:
-1. URL query parameters (highest priority)
-2. localStorage (persisted from URL)
-3. Vite environment variables (`import.meta.env.VITE_*`)
-4. Fallback to `null`
+### SPA routes and metadata
 
-### Finding Your App ID
+`vercel.json` rewrites unknown client-side routes to `/index.html` so direct navigation and page refresh work for React Router routes such as `/login`, `/register`, and `/dashboard`. Serverless `/api/*` functions continue to handle their own endpoints. The primary canonical/OG URL is `https://hackergf.devs.surf`; the Vercel hostname is retained as an alternate alias.
 
-Your Base44 app ID is available in the Base44 Builder dashboard. It's typically a UUID string.
+The chat API verifies Supabase sessions and validates requested model IDs and prompt size. In Vercel Production, both UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required; the endpoint fails closed without them and uses Upstash for shared per-user burst limiting and the monthly Free-plan quota. Local development may omit these values and uses an in-memory burst limit only. Premium model access is granted only when the verified user response has server-managed Supabase app_metadata claims: plan is pro, team, or enterprise, and subscription_status is active or trialing; an admin role is also allowed. Do not set these claims from browser input. Base44 Subscription records are not synchronized automatically to Supabase Auth metadata, and there is no verified checkout/webhook integration in this repo. Paid models therefore stay locked until a trusted billing/admin workflow updates the claims; paid plan changes are disabled until payment confirmation is processed server-side. Configure upstream provider spending limits as well.
 
----
+The API also applies a small per-user in-memory burst limit. Serverless instances do not share memory, so use a distributed rate limiter (for example, Redis/Upstash) and configure upstream spending limits before relying on the endpoint under substantial public load.
 
 ## 7. Deploying to Vercel
 
@@ -338,7 +346,7 @@ Your Base44 app ID is available in the Base44 Builder dashboard. It's typically 
 
 ### Vercel SPA Routing
 
-Vercel automatically handles SPA routing for Vite projects. No additional configuration needed.
+The repository includes a root `vercel.json` SPA fallback. Keep this file deployed: without it, direct loads and refreshes of React Router paths can return 404.
 
 ### Vercel Custom Domain
 
